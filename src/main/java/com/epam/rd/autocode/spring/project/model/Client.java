@@ -3,19 +3,17 @@ package com.epam.rd.autocode.spring.project.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Table(name = "client")
+@Table(name = "clients")
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class Client extends User {
 
     private BigDecimal balance;
