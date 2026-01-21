@@ -26,6 +26,8 @@ public class BookItem {
     @JoinColumn(name = "book_id")
     private Book book;
 
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;

@@ -13,11 +13,12 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Client extends User {
 
     private BigDecimal balance;
 
-    @OneToMany(mappedBy = "client")
-    private List<Order> orders;
+    public Client(Long id, String email, String password, String name, BigDecimal balance) {
+        super(id, email, password, name);
+        this.balance = balance;
+    }
 }

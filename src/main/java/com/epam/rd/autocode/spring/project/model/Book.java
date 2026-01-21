@@ -28,7 +28,7 @@ public class Book {
     private AgeGroup ageGroup;
     private BigDecimal price;
     @Column(name = "publication_year")
-    private LocalDate publishDate;
+    private LocalDate publicationDate;
     private String author;
     @Column(name = "number_of_pages")
     private Integer pages;
@@ -37,6 +37,4 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private Language language;
 
-    @OneToMany(mappedBy = "book")
-    private List<BookItem> bookItems;
 }

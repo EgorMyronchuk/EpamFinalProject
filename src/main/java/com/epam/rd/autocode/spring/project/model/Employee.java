@@ -11,13 +11,14 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class Employee extends User {
 
     private String phone;
     private LocalDate birthDate;
 
-    @OneToMany(mappedBy = "employee")
-    private List<Order> orders;
-
+    public Employee(Long id, String email, String password, String name, LocalDate birthDate, String phone) {
+        super(id, email, password, name);
+        this.birthDate = birthDate;
+        this.phone = phone;
+    }
 }
