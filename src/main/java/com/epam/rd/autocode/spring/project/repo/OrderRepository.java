@@ -1,5 +1,19 @@
 package com.epam.rd.autocode.spring.project.repo;
 
-public interface OrderRepository {
-    // TODO Place your code here
+import com.epam.rd.autocode.spring.project.model.Book;
+import com.epam.rd.autocode.spring.project.model.Client;
+import com.epam.rd.autocode.spring.project.model.Employee;
+import com.epam.rd.autocode.spring.project.model.Order;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface OrderRepository extends JpaRepository<Order, Long> {
+
+    List<Order> findOrdersByClient(Client client);
+
+    List<Order> findOrdersByEmployee(Employee employee);
+
 }
