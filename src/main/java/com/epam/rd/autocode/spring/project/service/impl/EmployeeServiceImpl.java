@@ -1,13 +1,17 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
-import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
 import com.epam.rd.autocode.spring.project.dto.mapper.EmployeeMapper;
+import com.epam.rd.autocode.spring.project.dto.request.employee.EmployeeReq;
+import com.epam.rd.autocode.spring.project.dto.response.employee.EmployeeRes;
+import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.model.Employee;
+import com.epam.rd.autocode.spring.project.model.User;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
+import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,47 +24,55 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final EmployeeMapper employeeMapper;
+    private final UserRepository userRepository;
 
     @Override
-    public EmployeeDTO addEmployee(EmployeeDTO employee) {
+    public EmployeeRes addEmployee(EmployeeReq employee) {
         Employee employeeEntity = employeeMapper.toEntity(employee);
         employeeRepository.save(employeeEntity);
         return employeeMapper.toDto(employeeEntity);
     }
 
     @Override
-    public List<EmployeeDTO> getAllEmployees() {
+    public List<EmployeeRes> getAllEmployees() {
         return employeeRepository.findAll().stream()
                 .map(employeeMapper::toDto)
                 .toList();
     }
 
     @Override
-    public EmployeeDTO getEmployeeByEmail(String email) {
-        Optional<Employee> employee = employeeRepository.findByEmail(email);
+    public EmployeeRes getEmployeeByEmail(String email) {
+        Optional<Employee> employee = employeeRepository.findByUserEmail(email);
         if (employee.isPresent()) {
             return employeeMapper.toDto(employee.get());
         }
         throw new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND);
     }
 
-    @Override
-    public EmployeeDTO updateEmployeeByEmail(String email, EmployeeDTO employeeDTO) {
-        Employee employee = employeeRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
+    @Transactional
+    public EmployeeRes updateEmployeeByEmail(String email, EmployeeReq req) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
-        employee.setName(employeeDTO.getName());
-        employee.setEmail(employeeDTO.getEmail());
-        employee.setPassword(employeeDTO.getPassword());
-        employee.setPhone(employeeDTO.getPhone());
-        employee.setBirthDate(employeeDTO.getBirthDate());
+        if (req.getEmail() != null && !req.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(req.getEmail())) {
+                throw new AlreadyExistException(ExceptionConstants.EMAIL_EXISTS);
+            }
+        }
 
-        return employeeMapper.toDto(employeeRepository.save(employee));
+        Employee employee = user.getEmployeeProfile();
+
+        employeeMapper.updateUserFromDto(req, user);
+        employeeMapper.updateEmployeeFromDto(req, employee);
+
+        userRepository.save(user);
+
+        return employeeMapper.toDto(employee);
     }
 
     @Override
     public void deleteEmployeeByEmail(String email) {
-        Employee client = employeeRepository.findByEmail(email)
+        Employee client = employeeRepository.findByUserEmail(email)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
 
         employeeRepository.delete(client);

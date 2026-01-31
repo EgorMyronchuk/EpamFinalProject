@@ -1,26 +1,18 @@
-package com.epam.rd.autocode.spring.project.dto;
+package com.epam.rd.autocode.spring.project.dto.request.employee;
 
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class EmployeeDTO {
+@NoArgsConstructor
+public class EmployeeReq {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String password;
 
     @NotBlank(message = "Name is required")
     private String name;
@@ -35,4 +27,5 @@ public class EmployeeDTO {
     @NotNull(message = "Birth date is required")
     @Past(message = "Birth date must be in the past")
     private LocalDate birthDate;
+
 }

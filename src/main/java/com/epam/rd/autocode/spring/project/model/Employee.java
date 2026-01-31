@@ -1,24 +1,34 @@
 package com.epam.rd.autocode.spring.project.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
-@Table(name = "employees")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Employee extends User {
+@AllArgsConstructor
+public class Employee {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne(optional = false)
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
     private String phone;
+
     private LocalDate birthDate;
 
-    public Employee(Long id, String email, String password, String name, LocalDate birthDate, String phone) {
-        super(id, email, password, name);
-        this.birthDate = birthDate;
-        this.phone = phone;
+    public Employee(User user) {
+        this.user = user;
     }
+
 }
+

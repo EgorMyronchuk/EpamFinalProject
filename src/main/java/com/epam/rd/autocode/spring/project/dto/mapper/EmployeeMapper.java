@@ -1,26 +1,20 @@
 package com.epam.rd.autocode.spring.project.dto.mapper;
 
-import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
-import com.epam.rd.autocode.spring.project.dto.EmployeeDTO;
-import com.epam.rd.autocode.spring.project.model.BookItem;
+import com.epam.rd.autocode.spring.project.dto.request.employee.EmployeeReq;
+import com.epam.rd.autocode.spring.project.dto.response.employee.EmployeeRes;
 import com.epam.rd.autocode.spring.project.model.Employee;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import com.epam.rd.autocode.spring.project.model.User;
 
-import java.util.Objects;
+import org.mapstruct.*;
 
-@RequiredArgsConstructor
-@Component
-public class EmployeeMapper {
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface EmployeeMapper {
 
-    private final ModelMapper mapper;
+    EmployeeRes toDto(Employee employee);
 
-    public Employee toEntity(EmployeeDTO dto) {
-        return Objects.isNull(dto) ? null : mapper.map(dto, Employee.class);
-    }
+    Employee toEntity(EmployeeReq employee);
 
-    public EmployeeDTO toDto(Employee entity) {
-        return Objects.isNull(entity) ? null : mapper.map(entity, EmployeeDTO.class);
-    }
+    void updateUserFromDto(EmployeeReq req, @MappingTarget User user);
+
+    void updateEmployeeFromDto(EmployeeReq req, @MappingTarget Employee employee);
 }

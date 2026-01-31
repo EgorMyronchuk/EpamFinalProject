@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class ClientDTOTest {
+public class UserDTOTest {
 
     private static List<Field> allFields;
     private static List<Constructor<?>> allConstructors;

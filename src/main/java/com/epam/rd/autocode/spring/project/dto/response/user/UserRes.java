@@ -1,19 +1,16 @@
-package com.epam.rd.autocode.spring.project.dto;
+package com.epam.rd.autocode.spring.project.dto.response.user;
 
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class ClientDTO {
-
+@NoArgsConstructor
+public class UserRes {
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;

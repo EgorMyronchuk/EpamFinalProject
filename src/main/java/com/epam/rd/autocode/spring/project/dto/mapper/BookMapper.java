@@ -5,22 +5,14 @@ import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.model.BookItem;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface BookMapper {
 
-@RequiredArgsConstructor
-@Component
-public class BookMapper {
+    Book toEntity(BookDTO entity);
 
-    private final ModelMapper mapper;
-
-    public Book toEntity(BookDTO dto) {
-        return Objects.isNull(dto) ? null : mapper.map(dto, Book.class);
-    }
-
-    public BookDTO toDto(Book entity) {
-        return Objects.isNull(entity) ? null : mapper.map(entity, BookDTO.class);
-    }
+    BookDTO toDto(Book entity);
 }

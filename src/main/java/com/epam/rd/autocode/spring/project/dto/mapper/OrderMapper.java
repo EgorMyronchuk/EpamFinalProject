@@ -1,26 +1,16 @@
 package com.epam.rd.autocode.spring.project.dto.mapper;
 
-import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
-import com.epam.rd.autocode.spring.project.dto.OrderDTO;
-import com.epam.rd.autocode.spring.project.model.BookItem;
+import com.epam.rd.autocode.spring.project.dto.request.order.OrderReq;
+import com.epam.rd.autocode.spring.project.dto.response.order.OrderRes;
 import com.epam.rd.autocode.spring.project.model.Order;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-import java.util.Objects;
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface OrderMapper {
 
-@RequiredArgsConstructor
-@Component
-public class OrderMapper {
+    public Order toEntity(OrderReq dto);
 
-    private final ModelMapper mapper;
+    public OrderRes toDto(Order entity);
 
-    public Order toEntity(OrderDTO dto) {
-        return Objects.isNull(dto) ? null : mapper.map(dto, Order.class);
-    }
-
-    public OrderDTO toDto(Order entity) {
-        return Objects.isNull(entity) ? null : mapper.map(entity, OrderDTO.class);
-    }
 }

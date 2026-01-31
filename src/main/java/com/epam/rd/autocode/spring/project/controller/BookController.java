@@ -28,14 +28,15 @@ public class BookController {
         return ResponseEntity.ok().body(new ArrayList<>());
     }
 
-    @GetMapping("/books/search")
-    public ResponseEntity<Page<BookDTO>> searchBooks(
-            BookSearchFilter filter,
-            @PageableDefault(size = 10, sort = "title") Pageable pageable
-    ) {
-        Page<BookDTO> books = bookService.search(filter, pageable);
-        return ResponseEntity.ok(books);
-    }
+//    @GetMapping("/books/filters")
+//    public ResponseEntity<Page<BookDTO>> addFilters(
+//            BookSearchFilter filter,
+//            @PageableDefault(size = 10, sort = "title") Pageable pageable
+//    ) {
+//        // Page<BookDTO> books = bookService.search(filter, pageable);
+//        //return ResponseEntity.ok(books);
+//        return ResponseEntity.ok(); //TODO
+//    }
 
 
 }
