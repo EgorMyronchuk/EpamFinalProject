@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="toast" class="toast-container">
+    <div th:if="${loginError}" class="toast error" id="notification">
+        <span th:text="${loginError}">Error message</span>
+    </div>
+    <div th:if="${successMessage}" class="toast success" id="notification-success">
+        <span th:text="${successMessage}">Success message</span>
+    </div>
+
+    <script th:src="@{/js/notifications.js}"></script>
+</div>
+</body>
+</html>

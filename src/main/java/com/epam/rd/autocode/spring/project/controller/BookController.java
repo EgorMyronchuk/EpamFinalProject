@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 import java.util.List;
 
-@RestController
+@Controller
 @RequestMapping("/books")
 @RequiredArgsConstructor
 public class BookController {
@@ -28,15 +29,9 @@ public class BookController {
         return ResponseEntity.ok().body(new ArrayList<>());
     }
 
-//    @GetMapping("/books/filters")
-//    public ResponseEntity<Page<BookDTO>> addFilters(
-//            BookSearchFilter filter,
-//            @PageableDefault(size = 10, sort = "title") Pageable pageable
-//    ) {
-//        // Page<BookDTO> books = bookService.search(filter, pageable);
-//        //return ResponseEntity.ok(books);
-//        return ResponseEntity.ok(); //TODO
-//    }
-
+    @GetMapping("/search")
+    public ResponseEntity search() {
+        return ResponseEntity.ok().body("Hello World");
+    }
 
 }

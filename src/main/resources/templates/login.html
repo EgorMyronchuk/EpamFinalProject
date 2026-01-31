@@ -1,32 +1,61 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title th:text="#{login.title}">Login</title>
     <link rel="stylesheet" th:href="@{/css/auth.css}">
 </head>
 <body>
 
+<div th:replace="~{fragments/notifications :: toast}"></div>
+
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+
 <div class="auth-container">
-    <h2>Login</h2>
+    <h2 th:text="#{login.title}">Login</h2>
 
-    <form th:action="@{/auth/login}" th:object="${createUserReq}" method="post">
+    <form th:action="@{/auth/login}"
+          th:object="${signInReq}"
+          method="post"
+          novalidate>
 
         <div class="form-group">
-            <label>Email</label>
-            <input type="email" th:field="*{email}" placeholder="Enter email" required>
+            <label th:text="#{login.email}">Email</label>
+            <input type="email"
+                   th:field="*{email}"
+                   th:placeholder="#{login.email.placeholder}">
+
+            <div class="error-message"
+                 th:if="${#fields.hasErrors('email')}"
+                 th:errors="*{email}">
+            </div>
         </div>
 
         <div class="form-group">
-            <label>Password</label>
-            <input type="password" th:field="*{password}" placeholder="Enter password" required>
+            <label th:text="#{login.password}">Password</label>
+            <input type="password"
+                   th:field="*{password}"
+                   th:placeholder="#{login.password.placeholder}">
+
+            <div class="error-message"
+                 th:if="${#fields.hasErrors('password')}"
+                 th:errors="*{password}">
+            </div>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit"
+                th:text="#{login.button}">
+            Login
+        </button>
 
         <p class="switch">
-            Don’t have an account?
-            <a th:href="@{/auth/register}">Register</a>
+            <span th:text="#{login.noAccount}">
+                Don’t have an account?
+            </span>
+            <a th:href="@{/auth/register}"
+               th:text="#{login.register}">
+                Register
+            </a>
         </p>
     </form>
 </div>

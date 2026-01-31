@@ -6,9 +6,11 @@ import com.epam.rd.autocode.spring.project.dto.request.auth.SignInReq;
 import com.epam.rd.autocode.spring.project.service.authService.AuthenticationService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
@@ -18,40 +20,46 @@ public class AuthController {
 
     private final AuthenticationService authService;
 
-    @GetMapping()
+    @GetMapping("/register") // Добавили путь для ясности
     public String showRegistrationForm(Model model) {
         model.addAttribute("createUserReq", new CreateUserReq());
         return "register";
     }
 
-
-    @PostMapping()
-    public String registration(@ModelAttribute CreateUserReq createUserReq){
+    @PostMapping("/register") // Путь должен совпадать с th:action в HTML
+    public String registration(@Valid @ModelAttribute("createUserReq") CreateUserReq createUserReq,
+                               BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return "register";
+        }
         authService.signUpForUser(createUserReq);
-
-         return "redirect:/auth/login";
+        return "redirect:/auth/login";
     }
 
     @GetMapping("/login")
     public String showLoginForm(Model model) {
-        model.addAttribute("createUserReq", new CreateUserReq());
+
+        model.addAttribute("signInReq", new SignInReq());
         return "login";
     }
 
-
     @PostMapping("/login")
-    public String login(@ModelAttribute SignInReq request, HttpServletResponse response) {
+    public String login(@Valid @ModelAttribute("signInReq") SignInReq request,
+                        BindingResult bindingResult,
+                        HttpServletResponse response) {
+        if (bindingResult.hasErrors()) {
+            return "login";
+        }
 
         JwtAuthenticationResponse jwtResponse = authService.signIn(request);
 
         Cookie jwtCookie = new Cookie("jwt", jwtResponse.getToken());
-        jwtCookie.setHttpOnly(true); // важно, чтобы JS не читал
+        jwtCookie.setHttpOnly(true);
         jwtCookie.setPath("/");
-        jwtCookie.setMaxAge(24 * 60 * 60); // 1 день
+        jwtCookie.setMaxAge(24 * 60 * 60);
         response.addCookie(jwtCookie);
 
-        return "/home";
+        return "redirect:/home"; // Редирект — это стандарт безопасности
     }
-
-    //add method to refresh password
 }
+

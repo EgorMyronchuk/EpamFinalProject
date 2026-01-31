@@ -9,16 +9,16 @@ import lombok.Data;
 @Data
 public class CreateUserReq {
 
-    @Email(message = "Email should be valid")
+    @Email()
     private String email;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, max = 50 , message = "Password must contain from 8 to 50 characters")
-    @Pattern(regexp = ".*[A-Z].*", message = "Password must contain at least one uppercase letter")
-    @Pattern(regexp = ".*[a-z].*", message = "Password must contain at least one lowercase letter")
+    @NotBlank()
+    @Size(min = 8, max = 50 )
+    @Pattern(regexp = ".*[A-Z].*", message = "{Pattern.createUserReq.password.uppercase}")
+    @Pattern(regexp = ".*[a-z].*", message = "{Pattern.createUserReq.password.lowercase}")
     private String password;
 
-    @NotBlank(message = "Name cannot be empty")
-    @Size(min = 4, max = 15, message = "Username must contain from 4 to 15 characters")
+    @NotBlank()
+    @Size(min = 4, max = 15)
     private String name;
 }

@@ -5,10 +5,15 @@ import com.epam.rd.autocode.spring.project.dto.mapper.BookMapper;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.Book;
+import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
+import com.epam.rd.autocode.spring.project.repo.specification.BookSpecifications;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,6 +26,8 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final BookSpecifications bookSpecifications;
+
 
     @Override
     public BookDTO addBook(BookDTO book) {
@@ -73,4 +80,40 @@ public class BookServiceImpl implements BookService {
 
         bookRepository.delete(book);
     }
+
+    @Override
+    public List<BookDTO> findAllByAuthorAndName(String searchMessage) {
+        var spec = Specification.where(bookSpecifications.hasTitle(searchMessage))
+                .or(bookSpecifications.hasAuthor(searchMessage));
+
+        List<Book> books = bookRepository.findAll(spec);
+
+        if (books.isEmpty()) {
+            throw new NotFoundException(ExceptionConstants.BOOK_NOT_FOUND);
+        }
+
+        return books.stream()
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    public Page<BookDTO> findBestSellers(Pageable pageable) {
+        return bookRepository
+                .findAllByOrderByWasSoldDesc(pageable)
+                .map(bookMapper::toDto);
+    }
+
+    public Page<BookDTO> findForChild(Pageable pageable) {
+        return bookRepository
+                .findAllByAgeGroup(AgeGroup.CHILD, pageable)
+                .map(bookMapper::toDto);
+    }
+
+    public Page<BookDTO> findNew(Pageable pageable) {
+        return bookRepository
+                .findAllByOrderByReleaseDateDesc(pageable)
+                .map(bookMapper::toDto);
+    }
+
+
 }

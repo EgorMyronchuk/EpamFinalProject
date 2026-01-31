@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<div th:fragment="lang-button">
+    <style>
+        :root {
+            --en-bg: linear-gradient(135deg, #1a2a6c 0%, #203a43 100%);
+            --uk-bg: linear-gradient(135deg, #0052D4 0%, #6FB1FC 50%, #f5af19 100%);
+            --transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .lang-switcher {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 10000;
+        }
+
+        .lang-checkbox { display: none; }
+
+        .lang-label {
+            width: 92px;
+            height: 40px;
+            background: var(--en-bg);
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            transition: var(--transition);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+        }
+
+        .lang-label span {
+            color: white;
+            font-size: 12px;
+            font-weight: 800;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+            user-select: none;
+        }
+
+        .lang-ball {
+            width: 32px;
+            height: 32px;
+            background: #ffffff;
+            border-radius: 50%;
+            position: absolute;
+            left: 4px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            z-index: 2;
+        }
+
+        .lang-ball::before {
+            content: '';
+            width: 14px;
+            height: 2px;
+            background: #333;
+            box-shadow: 0 4px 0 #333, 0 -4px 0 #333;
+            border-radius: 2px;
+        }
+
+        .lang-checkbox:checked + .lang-label {
+            background: var(--uk-bg);
+        }
+
+        .lang-checkbox:checked + .lang-label .lang-ball {
+            transform: translateX(50px);
+        }
+
+        .lang-label:active {
+            transform: scale(0.96);
+        }
+
+        @media (max-width: 480px) {
+            .lang-switcher {
+                top: 15px;
+                left: 15px;
+            }
+        }
+    </style>
+
+    <div class="lang-switcher">
+        <input type="checkbox" id="lang-toggle" class="lang-checkbox"
+               th:checked="${#locale.language == 'uk'}"
+               onchange="changeLanguage(this.checked)">
+
+        <label for="lang-toggle" class="lang-label">
+            <span>EN</span>
+            <span>UK</span>
+            <div class="lang-ball"></div>
+        </label>
+    </div>
+
+    <script>
+        function changeLanguage(isUk) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', isUk ? 'uk' : 'en');
+            window.location.href = url.toString();
+        }
+    </script>
+</div>
+
+<div th:fragment="nav-menu">
+    <style>
+        .main-nav {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 10000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            background: white;
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+            color: #0052D4;
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                top: 15px;
+                right: 15px;
+                gap: 8px;
+            }
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
+
+    <nav class="main-nav">
+        <a th:href="@{/home}" class="nav-link" th:text="#{nav.home}">Home</a>
+        <a th:href="@{/profile}" class="nav-link" th:text="#{nav.profile}">Profile</a>
+    </nav>
+</div>
+
+</body>
+</html>

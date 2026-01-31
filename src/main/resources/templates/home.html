@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{login.title}">Login</title>
+    <link rel="stylesheet" th:href="@{/css/auth.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+<div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+</body>
+</html>

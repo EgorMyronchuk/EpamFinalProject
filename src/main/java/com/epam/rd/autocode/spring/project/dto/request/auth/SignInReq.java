@@ -12,12 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SignInReq {
-    @Email(message = "Email should be valid")
+    @Email()
     private String email;
 
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8, max = 50, message = "Password must contain from 8 to 50 characters")
-    @Pattern(regexp = ".*[A-Z].*", message = "Password must contain at least one uppercase letter")
-    @Pattern(regexp = ".*[a-z].*", message = "Password must contain at least one lowercase letter")
+    @NotBlank()
+    @Size(min = 8, max = 50)
+    @Pattern(regexp = ".*[A-Z].*", message = "{Pattern.signInReq.password.uppercase}")
+    @Pattern(regexp = ".*[a-z].*", message = "{Pattern.signInReq.password.lowercase}")
     private String password;
 }
