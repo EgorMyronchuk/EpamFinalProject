@@ -1,6 +1,5 @@
 package com.epam.rd.autocode.spring.project.repo;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import org.springframework.data.domain.Page;
@@ -18,9 +17,10 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 
     Page<Book> findAll(Pageable pageable);
 
-    Page<Book> findAllByOrderByWasSoldDesc(Pageable pageable);
+    Page<Book> findAllByOrderBySoldAmountDesc(Pageable pageable);
 
     Page<Book> findAllByAgeGroup(AgeGroup ageGroup, Pageable pageable);
 
-    Page<Book> findAllByOrderByReleaseDateDesc(Pageable pageable);
+    Page<Book> findAllByOrderByPublicationDateDesc(Pageable pageable);
 }
+

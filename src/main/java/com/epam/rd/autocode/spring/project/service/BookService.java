@@ -1,6 +1,7 @@
 package com.epam.rd.autocode.spring.project.service;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -8,22 +9,22 @@ import java.util.List;
 
 public interface BookService {
 
-    Page<BookDTO> getAllBooks(Pageable pageable);
+    Page<BookRes> getAllBooks(Pageable pageable);
 
-    BookDTO getBookByName(String name);
+    BookRes getBookByName(String name);
 
-    BookDTO updateBookByName(String name, BookDTO book);
+    BookRes updateBookByName(String name, BookReq book);
 
     void deleteBookByName(String name);
 
-    BookDTO addBook(BookDTO book);
+    BookRes addBook(BookReq book);
 
-    List<BookDTO> findAllByAuthorAndName(String author);
+    List<BookRes> findAllByAuthorAndName(String author);
 
-    Page<BookDTO> findBestSellers(Pageable pageable);
+    List<BookRes> findBestSellers(Pageable pageable);
 
-    Page<BookDTO> findForChild(Pageable pageable);
+    List<BookRes> findForChild(Pageable pageable);
 
-    Page<BookDTO> findNew(Pageable pageable);
+    List<BookRes> findNew(Pageable pageable);
 
 }

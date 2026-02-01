@@ -1,18 +1,23 @@
 package com.epam.rd.autocode.spring.project.dto.mapper;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
-import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
+import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import com.epam.rd.autocode.spring.project.model.Book;
-import com.epam.rd.autocode.spring.project.model.BookItem;
-import lombok.RequiredArgsConstructor;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.springframework.stereotype.Component;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
+)
 public interface BookMapper {
 
-    Book toEntity(BookDTO entity);
+    Book toEntity(BookReq req);
 
-    BookDTO toDto(Book entity);
+    BookRes toDto(Book book);
+
+    void updateBookFromDto(BookReq req, @MappingTarget Book book);
 }
+

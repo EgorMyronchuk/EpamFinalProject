@@ -1,6 +1,8 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import com.epam.rd.autocode.spring.project.dto.mapper.BookMapper;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
@@ -16,7 +18,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,20 +31,20 @@ public class BookServiceImpl implements BookService {
 
 
     @Override
-    public BookDTO addBook(BookDTO book) {
+    public BookRes addBook(BookReq book) {
         Book entity = bookMapper.toEntity(book);
         Book saved = bookRepository.save(entity);
         return bookMapper.toDto(saved);
     }
 
     @Override
-    public Page<BookDTO> getAllBooks(Pageable pageable) {
+    public Page<BookRes> getAllBooks(Pageable pageable) {
         return bookRepository.findAll(pageable)
                 .map(bookMapper::toDto);
     }
 
     @Override
-    public BookDTO getBookByName(String name) {
+    public BookRes getBookByName(String name) {
         Optional<Book> bookOpt = bookRepository.findByName(name);
         if (bookOpt.isPresent()) {
             return bookMapper.toDto(bookOpt.get());
@@ -52,25 +53,19 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO updateBookByName(String name, BookDTO bookDto) {
-        Book book = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Book with name :" + name + " not found"));
+    @Transactional
+    public BookRes updateBookByName(String name, BookReq bookReq) {
 
-        book.setName(bookDto.getName());
-        book.setGenre(bookDto.getGenre());
-        book.setAgeGroup(bookDto.getAgeGroup());
-        book.setPrice(bookDto.getPrice());
-        book.setPublicationDate(bookDto.getPublicationDate());
-        book.setAuthor(bookDto.getAuthor());
-        book.setPages(bookDto.getPages());
-        book.setCharacteristics(bookDto.getCharacteristics());
-        book.setDescription(bookDto.getDescription());
-        book.setLanguage(bookDto.getLanguage());
+        Book book = bookRepository.findByName(name)
+                .orElseThrow(() -> new NotFoundException("Book with name: " + name + " not found"));
+
+        bookMapper.updateBookFromDto(bookReq, book);
 
         Book saved = bookRepository.save(book);
 
         return bookMapper.toDto(saved);
     }
+
 
     @Override
     public void deleteBookByName(String name) throws NotFoundException {
@@ -81,8 +76,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDTO> findAllByAuthorAndName(String searchMessage) {
-        var spec = Specification.where(bookSpecifications.hasTitle(searchMessage))
+    public List<BookRes> findAllByAuthorAndName(String searchMessage) {
+        var spec = Specification.where(bookSpecifications.hasName(searchMessage))
                 .or(bookSpecifications.hasAuthor(searchMessage));
 
         List<Book> books = bookRepository.findAll(spec);
@@ -96,22 +91,25 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
-    public Page<BookDTO> findBestSellers(Pageable pageable) {
-        return bookRepository
-                .findAllByOrderByWasSoldDesc(pageable)
-                .map(bookMapper::toDto);
+    public List<BookRes> findBestSellers(Pageable limitTen) {
+
+        return bookRepository.findAllByOrderBySoldAmountDesc(limitTen)
+                .map(bookMapper::toDto)
+                .toList();
     }
 
-    public Page<BookDTO> findForChild(Pageable pageable) {
+    public List<BookRes> findForChild(Pageable pageable) {
         return bookRepository
                 .findAllByAgeGroup(AgeGroup.CHILD, pageable)
-                .map(bookMapper::toDto);
+                .map(bookMapper::toDto)
+                .toList();
     }
 
-    public Page<BookDTO> findNew(Pageable pageable) {
+    public List<BookRes> findNew(Pageable pageable) {
         return bookRepository
-                .findAllByOrderByReleaseDateDesc(pageable)
-                .map(bookMapper::toDto);
+                .findAllByOrderByPublicationDateDesc(pageable)
+                .map(bookMapper::toDto)
+                .toList();
     }
 
 

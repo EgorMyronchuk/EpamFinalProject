@@ -31,14 +31,15 @@ public class Book {
     @Enumerated(EnumType.STRING)
     private AgeGroup ageGroup;
     private BigDecimal price;
-    @Column(name = "publication_year")
+    @Column(name = "publication_date")
     private LocalDate publicationDate;
     private String author;
     @Column(name = "number_of_pages")
     private Integer pages;
     private String characteristics;
     private String description;
-    private Integer wasSold;
+    @Column(name = "sold_amount")
+    private Integer soldAmount;
     @Enumerated(EnumType.STRING)
     private Language language;
 
