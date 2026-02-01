@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BookService {
 
-    List<BookDTO> getAllBooks();
+    Page<BookDTO> getAllBooks(Pageable pageable);
 
     BookDTO getBookByName(String name);
 

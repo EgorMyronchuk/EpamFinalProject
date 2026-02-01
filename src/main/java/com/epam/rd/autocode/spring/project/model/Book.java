@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -24,6 +25,8 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(name = "photo_url")
+    private String photoUrl;
     private String genre;
     @Enumerated(EnumType.STRING)
     private AgeGroup ageGroup;
@@ -38,6 +41,9 @@ public class Book {
     private Integer wasSold;
     @Enumerated(EnumType.STRING)
     private Language language;
-    private LocalDateTime releaseDate;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+    private LocalDateTime deletedAt;
 
 }
