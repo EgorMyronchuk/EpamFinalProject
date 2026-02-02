@@ -7,6 +7,7 @@ import com.epam.rd.autocode.spring.project.dto.request.auth.SignInReq;
 import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
+import com.epam.rd.autocode.spring.project.exception.UserAccountDisabledException;
 import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.model.UserPrincipal;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
@@ -59,7 +60,6 @@ public class AuthenticationService {
         return new JwtAuthenticationResponse(jwt);
     }
 
-
     public JwtAuthenticationResponse signIn(SignInReq request) {
 
         Authentication authentication = authenticationManager.authenticate(
@@ -70,6 +70,10 @@ public class AuthenticationService {
         );
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
+
+        if (!principal.getUser().isActive()) {
+            throw new UserAccountDisabledException("Account is disabled");
+        }
 
         String jwt = jwtService.generateToken(principal);
         return new JwtAuthenticationResponse(jwt);

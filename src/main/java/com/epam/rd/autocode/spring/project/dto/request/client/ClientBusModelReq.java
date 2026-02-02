@@ -1,35 +1,28 @@
-package com.epam.rd.autocode.spring.project.dto.response.employee;
+package com.epam.rd.autocode.spring.project.dto.request.client;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.time.LocalDate;
-
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
-public class EmployeeRes {
+@NoArgsConstructor
+public class ClientBusModelReq {
 
     @NotBlank(message = "Email is required")
     @Email(message = "Email must be valid")
     private String email;
-
     @NotBlank(message = "Name is required")
     private String name;
-
     @NotBlank(message = "Phone is required")
     @Pattern(
             regexp = "^(\\+?380)?\\s?(\\d{2,3})[-\\s]?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$",
             message = "Phone must be a valid Ukrainian number"
     )
+    private String phoneNumber;
 
-    private String phone;
-
-    @NotNull(message = "Birth date is required")
-    @Past(message = "Birth date must be in the past")
-    private LocalDate birthDate;
+    private String deliveryAddress;
 }

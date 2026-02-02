@@ -169,7 +169,7 @@
     </style>
 
     <div class="search-wrapper">
-        <form th:action="@{/books/search}" method="GET" class="search-form">
+        <form th:action="@{/books}" method="GET" class="search-form">
             <input type="hidden" name="fromView" th:value="${currentView}">
 
             <input type="text" name="query"
@@ -178,6 +178,35 @@
                    required>
             <button type="submit" class="search-button" th:text="#{search.button}">Search</button>
         </form>
+    </div>
+</div>
+
+<div th:fragment="user-balance">
+    <style>
+        .balance-container {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            color: #2ecc71; /* Зеленый цвет для денег */
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .currency-symbol {
+            color: #27ae60;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+    </style>
+
+    <div class="balance-container" th:if="${userBalance != null}">
+        <span th:text="${userBalance}">0.00</span>
+        <span class="currency-symbol" th:text="${#locale.language == 'en' ? 'USD' : 'UAH'}">UAH</span>
     </div>
 </div>
 
@@ -230,6 +259,9 @@
     </style>
 
     <nav class="main-nav">
+        <div th:if="${#httpServletRequest.getServletPath() != '/profile'}"
+             th:replace="~{::user-balance}"></div>
+
         <a th:href="@{/books}" class="nav-link books-btn" th:text="#{nav.books}">Books</a>
         <a th:href="@{/home}" class="nav-link" th:text="#{nav.home}">Home</a>
         <a th:href="@{/profile}" class="nav-link" th:text="#{nav.profile}">Profile</a>

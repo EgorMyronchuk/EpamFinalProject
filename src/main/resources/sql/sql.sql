@@ -1,4 +1,3 @@
-
 INSERT INTO books (
     name, photo_url, genre, age_group, price, publication_date,
     author, number_of_pages, characteristics, description, sold_amount,
@@ -26,10 +25,10 @@ INSERT INTO books (
 ('Чому ми спимо', 'https://static.yakaboo.ua/media/catalog/product/2/0/201_1_5.jpg', 'Наука', 'ADULT', 390.00, '2017-01-01', 'Меттью Вокер', 400, 'Научпоп', 'Наукове дослідження сну та його важливості.', 800, 'UKRAINIAN', CURRENT_TIMESTAMP),
 
 -- English Classics & Modern
-('1984', 'https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg', 'Dystopian', 'ADULT', 250.00, '1949-06-08', 'George Orwell', 328, 'Penguin Classics', 'The ultimate dystopian masterpiece.', 5000, 'ENGLISH', CURRENT_TIMESTAMP),
-('The Great Gatsby', 'https://m.media-amazon.com/images/M/MV5BMTkxNTk1ODcxNl5BMl5BanBnXkFtZTcwMDI1OTMzOQ@@._V1_.jpg', 'Classic', 'ADULT', 320.00, '1925-04-10', 'F. Scott Fitzgerald', 180, 'Hardcover', 'Decadence and the American Dream.', 1200, 'ENGLISH', CURRENT_TIMESTAMP),
-('To Kill a Mockingbird', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg/250px-To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg', 'Drama', 'TEEN', 380.00, '1960-07-11', 'Harper Lee', 281, 'Modern Classic', 'A story of racial injustice in the South.', 1500, 'ENGLISH', CURRENT_TIMESTAMP),
-('The Alchemist', 'https://m.media-amazon.com/images/I/71+2-t7M35L._AC_UF1000,1000_QL80_.jpg', 'Philosophy', 'TEEN', 290.00, '1988-01-01', 'Paulo Coelho', 208, 'International bestseller', 'Follow your dreams.', 4000, 'ENGLISH', CURRENT_TIMESTAMP),
+('1984', 'https://images-na.ssl-images-amazon.com/images/I/71kxa1-0mfL.jpg', 'Антиутопія', 'ADULT', 250.00, '1949-06-08', 'George Orwell', 328, 'Penguin Classics', 'The ultimate dystopian masterpiece.', 5000, 'ENGLISH', CURRENT_TIMESTAMP),
+('The Great Gatsby', 'https://m.media-amazon.com/images/M/MV5BMTkxNTk1ODcxNl5BMl5BanBnXkFtZTcwMDI1OTMzOQ@@._V1_.jpg', 'Класика', 'ADULT', 320.00, '1925-04-10', 'F. Scott Fitzgerald', 180, 'Hardcover', 'Decadence and the American Dream.', 1200, 'ENGLISH', CURRENT_TIMESTAMP),
+('To Kill a Mockingbird', 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg/250px-To_Kill_a_Mockingbird_%28first_edition_cover%29.jpg', 'Драма', 'TEEN', 380.00, '1960-07-11', 'Harper Lee', 281, 'Modern Classic', 'A story of racial injustice in the South.', 1500, 'ENGLISH', CURRENT_TIMESTAMP),
+('The Alchemist', 'https://m.media-amazon.com/images/I/71+2-t7M35L._AC_UF1000,1000_QL80_.jpg', 'Філософія', 'TEEN', 290.00, '1988-01-01', 'Paulo Coelho', 208, 'International bestseller', 'Follow your dreams.', 4000, 'ENGLISH', CURRENT_TIMESTAMP),
 
 -- Дитяча література
 ('Тореадори з Васюківки', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/r/r/rrcvdnqrqlnylikfe1mdrxgnomnujwzofp8hndql.jpg', 'Пригоди', 'CHILD', 330.00, '1963-01-01', 'Всеволод Нестайко', 544, 'Ілюстрована', 'Найвеселіші пригоди українських школярів.', 2800, 'UKRAINIAN', CURRENT_TIMESTAMP),
@@ -68,17 +67,17 @@ INSERT INTO books (
 
 -- IT-література (UKRAINIAN & ENGLISH)
 ('Чиста архітектура', 'https://static.yakaboo.ua/media/catalog/product/f/b/fb722076u_chystaya-arhytektura_obl_3d.jpg', 'IT-література', 'ADULT', 550.00, '2017-09-10', 'Роберт Мартін', 432, 'Мистецтво розробки ПЗ', 'Посібник зі структури та дизайну програмного забезпечення.', 1100, 'UKRAINIAN', CURRENT_TIMESTAMP),
-('Design Patterns', 'https://www.pdfiles.net/storage/91358586089519.jpg', 'Computer Science', 'ADULT', 890.00, '1994-10-21', 'Erich Gamma', 395, 'Hardcover', 'Elements of Reusable Object-Oriented Software.', 2000, 'ENGLISH', CURRENT_TIMESTAMP),
-('Refactoring', 'https://static.yakaboo.ua/media/catalog/product/9/7/9780134757599_0.jpg', 'Computer Science', 'ADULT', 750.00, '2018-11-20', 'Martin Fowler', 448, 'Technical guide', 'Improving the design of existing code.', 850, 'ENGLISH', CURRENT_TIMESTAMP),
-('The Pragmatic Programmer', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/i/m/img482_35.jpg', 'IT', 'ADULT', 820.00, '1999-10-30', 'Andrew Hunt', 352, '20th Anniversary Edition', 'Your journey to mastery.', 1500, 'ENGLISH', CURRENT_TIMESTAMP),
+('Design Patterns', 'https://www.pdfiles.net/storage/91358586089519.jpg', 'IT-література', 'ADULT', 890.00, '1994-10-21', 'Erich Gamma', 395, 'Hardcover', 'Elements of Reusable Object-Oriented Software.', 2000, 'ENGLISH', CURRENT_TIMESTAMP),
+('Refactoring', 'https://static.yakaboo.ua/media/catalog/product/9/7/9780134757599_0.jpg', 'IT-література', 'ADULT', 750.00, '2018-11-20', 'Martin Fowler', 448, 'Technical guide', 'Improving the design of existing code.', 850, 'ENGLISH', CURRENT_TIMESTAMP),
+('The Pragmatic Programmer', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/i/m/img482_35.jpg', 'IT-література', 'ADULT', 820.00, '1999-10-30', 'Andrew Hunt', 352, '20th Anniversary Edition', 'Your journey to mastery.', 1500, 'ENGLISH', CURRENT_TIMESTAMP),
 
 -- Світові мови
-('Don Quijote de la Mancha', 'https://m.media-amazon.com/images/I/91CIwR3QU1L._UF1000,1000_QL80_.jpg', 'Classic', 'ADULT', 480.00, '1605-01-01', 'Miguel de Cervantes', 864, 'Tapa dura', 'El ingenioso hidalgo de la Mancha.', 300, 'SPANISH', CURRENT_TIMESTAMP),
-('Cien años de soledad', 'https://tienda.fundaciongabo.org/cdn/shop/files/21.png?v=1761065413', 'Realismo Magico', 'ADULT', 410.00, '1967-05-30', 'Gabriel Garcia Marquez', 471, 'Edicion de bolsillo', 'La historia de la familia Buendia.', 500, 'SPANISH', CURRENT_TIMESTAMP),
-('Le Petit Prince', 'https://content2.rozetka.com.ua/goods/images/big/265962330.jpg', 'Enfants', 'CHILD', 220.00, '1943-04-01', 'Antoine de Saint-Exupery', 96, 'Francais original', 'Dessine-moi un mouton.', 1800, 'FRENCH', CURRENT_TIMESTAMP),
-('Les Miserables', 'https://content.rozetka.com.ua/goods/images/big/224230568.jpg', 'Classique', 'ADULT', 590.00, '1862-01-01', 'Victor Hugo', 1232, 'Edition integrale', 'L''histoire de Jean Valjean.', 400, 'FRENCH', CURRENT_TIMESTAMP),
-('Die Verwandlung', 'https://www.diogenes.ch/.imaging/diogenesTitleDetailMedia/titel/franz-kafka/die-verwandlung-9783257235456.jpg', 'Klassik', 'ADULT', 195.00, '1915-10-01', 'Franz Kafka', 100, 'Deutsch', 'Gregor Samsa als Ungeziefer.', 600, 'GERMAN', CURRENT_TIMESTAMP),
-('Kokoro', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxftiNZyuzSr3GJq0tKYB84HtzUBdqyyt4tA&s', 'Classic', 'ADULT', 450.00, '1914-01-01', 'Natsume Soseki', 250, 'Japanese text', 'A study of modern Japanese isolation.', 150, 'JAPANESE', CURRENT_TIMESTAMP),
+('Don Quijote de la Mancha', 'https://m.media-amazon.com/images/I/91CIwR3QU1L._UF1000,1000_QL80_.jpg', 'Класика', 'ADULT', 480.00, '1605-01-01', 'Miguel de Cervantes', 864, 'Tapa dura', 'El ingenioso hidalgo de la Mancha.', 300, 'SPANISH', CURRENT_TIMESTAMP),
+('Cien años de soledad', 'https://tienda.fundaciongabo.org/cdn/shop/files/21.png?v=1761065413', 'Магічний реалізм', 'ADULT', 410.00, '1967-05-30', 'Gabriel Garcia Marquez', 471, 'Edicion de bolsillo', 'La historia de la familia Buendia.', 500, 'SPANISH', CURRENT_TIMESTAMP),
+('Le Petit Prince', 'https://content2.rozetka.com.ua/goods/images/big/265962330.jpg', 'Казка', 'CHILD', 220.00, '1943-04-01', 'Antoine de Saint-Exupery', 96, 'Francais original', 'Dessine-moi un mouton.', 1800, 'FRENCH', CURRENT_TIMESTAMP),
+('Les Miserables', 'https://content.rozetka.com.ua/goods/images/big/224230568.jpg', 'Класика', 'ADULT', 590.00, '1862-01-01', 'Victor Hugo', 1232, 'Edition integrale', 'L''histoire de Jean Valjean.', 400, 'FRENCH', CURRENT_TIMESTAMP),
+('Die Verwandlung', 'https://www.diogenes.ch/.imaging/diogenesTitleDetailMedia/titel/franz-kafka/die-verwandlung-9783257235456.jpg', 'Класика', 'ADULT', 195.00, '1915-10-01', 'Franz Kafka', 100, 'Deutsch', 'Gregor Samsa als Ungeziefer.', 600, 'GERMAN', CURRENT_TIMESTAMP),
+('Kokoro', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxftiNZyuzSr3GJq0tKYB84HtzUBdqyyt4tA&s', 'Класика', 'ADULT', 450.00, '1914-01-01', 'Natsume Soseki', 250, 'Japanese text', 'A study of modern Japanese isolation.', 150, 'JAPANESE', CURRENT_TIMESTAMP),
 
 -- Бізнес та Економіка
 ('Багатий тато, бідний тато', 'https://static.yakaboo.ua/media/catalog/product/i/m/img710_45.jpg', 'Бізнес', 'ADULT', 315.00, '1997-04-01', 'Роберт Кіййосакі', 336, 'Світовий бестселер', 'Уроки фінансової грамотності.', 4000, 'UKRAINIAN', CURRENT_TIMESTAMP),
@@ -120,22 +119,21 @@ INSERT INTO books (
 ('Зелене світло', 'https://static.yakaboo.ua/media/catalog/product/8/0/80e1685978d971ca0cb2d34339bd437e.jpg', 'Біографія', 'ADULT', 360.00, '2020-10-20', 'Меттью Макконагі', 320, 'Тверда палітурка', 'Життєві уроки та пригоди голлівудського актора.', 2400, 'UKRAINIAN', CURRENT_TIMESTAMP),
 
 -- Японська культура та Манга
-('Naruto Vol. 1', 'https://static.yakaboo.ua/media/catalog/product/9/7/9781569319000_0.jpg', 'Manga', 'TEEN', 350.00, '1999-09-21', 'Masashi Kishimoto', 192, 'Softcover', 'The journey of a ninja begins.', 5000, 'JAPANESE', CURRENT_TIMESTAMP),
-('Death Note Vol. 1', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/5/f/5f_38.jpg', 'Manga', 'TEEN', 350.00, '2003-12-01', 'Tsugumi Ohba', 200, 'Thriller', 'Whose name will be written next?', 4500, 'JAPANESE', CURRENT_TIMESTAMP),
+('Naruto Vol. 1', 'https://static.yakaboo.ua/media/catalog/product/9/7/9781569319000_0.jpg', 'Манґа', 'TEEN', 350.00, '1999-09-21', 'Masashi Kishimoto', 192, 'Softcover', 'The journey of a ninja begins.', 5000, 'JAPANESE', CURRENT_TIMESTAMP),
+('Death Note Vol. 1', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/5/f/5f_38.jpg', 'Манґа', 'TEEN', 350.00, '2003-12-01', 'Tsugumi Ohba', 200, 'Thriller', 'Whose name will be written next?', 4500, 'JAPANESE', CURRENT_TIMESTAMP),
 ('Мандрівний замок Хаула', 'https://mybookshelf.com.ua/assets/images/products/11045/big/img-0240-4.webp', 'Фентезі', 'CHILD', 280.00, '1986-01-01', 'Діана Вінн Джонс', 352, 'А-ба-ба-га-ла-ма-га', 'Казкова історія, що надихнула Хаяо Міядзакі.', 1800, 'UKRAINIAN', CURRENT_TIMESTAMP),
 
 -- English - Technical & Modern
-('The Clean Coder', 'https://static.yakaboo.ua/media/catalog/product/9/7/9780137081073_0.jpg', 'IT', 'ADULT', 880.00, '2011-05-13', 'Robert Martin', 256, 'Professionalism', 'A Code of Conduct for Professional Programmers.', 1400, 'ENGLISH', CURRENT_TIMESTAMP),
-('Normal People', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgyHwvlIdVfj6V1OrmZyS8B1ADXffSqAxpMg&s', 'Modern Prose', 'ADULT', 410.00, '2018-08-28', 'Sally Rooney', 273, 'Paperback', 'A story of mutual fascination and friendship.', 2100, 'ENGLISH', CURRENT_TIMESTAMP),
-('Where the Crawdads Sing', 'https://m.media-amazon.com/images/I/71yIb3aiOPL._AC_UF1000,1000_QL80_.jpg', 'Mystery', 'ADULT', 390.00, '2018-08-14', 'Delia Owens', 384, 'International bestseller', 'The story of the Marsh Girl.', 3000, 'ENGLISH', CURRENT_TIMESTAMP),
+('The Clean Coder', 'https://static.yakaboo.ua/media/catalog/product/9/7/9780137081073_0.jpg', 'IT-література', 'ADULT', 880.00, '2011-05-13', 'Robert Martin', 256, 'Professionalism', 'A Code of Conduct for Professional Programmers.', 1400, 'ENGLISH', CURRENT_TIMESTAMP),
+('Normal People', 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgyHwvlIdVfj6V1OrmZyS8B1ADXffSqAxpMg&s', 'Сучасна проза', 'ADULT', 410.00, '2018-08-28', 'Sally Rooney', 273, 'Paperback', 'A story of mutual fascination and friendship.', 2100, 'ENGLISH', CURRENT_TIMESTAMP),
+('Where the Crawdads Sing', 'https://m.media-amazon.com/images/I/71yIb3aiOPL._AC_UF1000,1000_QL80_.jpg', 'Детектив', 'ADULT', 390.00, '2018-08-14', 'Delia Owens', 384, 'International bestseller', 'The story of the Marsh Girl.', 3000, 'ENGLISH', CURRENT_TIMESTAMP),
 
 -- Spanish & French
-('La sombra del viento', 'https://cdn.27.ua/sc--media--prod/default/a3/fa/66/a3fa666c-0ae7-493e-88b1-0bed3969891c.jpg', 'Misterio', 'ADULT', 450.00, '2001-04-01', 'Carlos Ruiz Zafon', 569, 'Tapa blanda', 'Un viaje al Cementerio de los Libros Olvidados.', 900, 'SPANISH', CURRENT_TIMESTAMP),
-('L''Etranger', 'https://m.media-amazon.com/images/I/81w-+lwQ6ML._AC_UF1000,1000_QL80_.jpg', 'Philosophie', 'ADULT', 230.00, '1942-05-19', 'Albert Camus', 159, 'Poche francaise', 'L''histoire de Meursault.', 1100, 'FRENCH', CURRENT_TIMESTAMP),
+('La sombra del viento', 'https://cdn.27.ua/sc--media--prod/default/a3/fa/66/a3fa666c-0ae7-493e-88b1-0bed3969891c.jpg', 'Детектив', 'ADULT', 450.00, '2001-04-01', 'Carlos Ruiz Zafon', 569, 'Tapa blanda', 'Un viaje al Cementरियो de los Libros Olvidados.', 900, 'SPANISH', CURRENT_TIMESTAMP),
+('L''Etranger', 'https://m.media-amazon.com/images/I/81w-+lwQ6ML._AC_UF1000,1000_QL80_.jpg', 'Філософія', 'ADULT', 230.00, '1942-05-19', 'Albert Camus', 159, 'Poche francaise', 'L''histoire de Meursault.', 1100, 'FRENCH', CURRENT_TIMESTAMP),
 
 -- Українська дитяча та підліткова
 ('Айседора Мун', 'https://vivat.com.ua/storage/1.d/files/7/5/75cc5353_7a0eea82_z8390_aysedora-mun-potr.png', 'Пригоди', 'CHILD', 195.00, '2016-01-01', 'Гаррієт Мункастер', 128, 'Для дівчаток', 'Наполовину фея, наполовину вампір.', 3500, 'UKRAINIAN', CURRENT_TIMESTAMP),
-
 ('Сторожова застава', 'https://static.yakaboo.ua/media/cloudflare/product/webp/600x840/4/2/426_1_7.jpg', 'Історичне фентезі', 'CHILD', 260.00, '1991-01-01', 'Володимир Рутківський', 304, 'А-ба-ба-га-ла-ма-га', 'Подорож сучасного школяра у часи Русі.', 1200, 'UKRAINIAN', CURRENT_TIMESTAMP),
 
 -- Сучасні бестселери

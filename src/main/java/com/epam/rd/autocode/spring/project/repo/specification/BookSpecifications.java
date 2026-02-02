@@ -33,15 +33,19 @@ public class BookSpecifications {
     }
 
     // Фильтр по возрастной группе
-    public Specification<Book> hasAgeGroup(AgeGroup ageGroup) {
-        return (root, query, cb) ->
-                ageGroup == null ? null : cb.equal(root.get("ageGroup"), ageGroup);
+    public Specification<Book> hasAgeGroups(List<AgeGroup> ageGroups) {
+        return (root, query, cb) -> {
+            if (ageGroups == null || ageGroups.isEmpty()) return null;
+            return root.get("ageGroup").in(ageGroups);
+        };
     }
 
     // Фильтр по языку
-    public Specification<Book> hasLanguage(Language language) {
-        return (root, query, cb) ->
-                language == null ? null : cb.equal(root.get("language"), language);
+    public Specification<Book> hasLanguages(List<Language> languages) {
+        return (root, query, cb) -> {
+            if (languages == null || languages.isEmpty()) return null;
+            return root.get("language").in(languages);
+        };
     }
 
     // Фильтр по диапазону цен
@@ -51,6 +55,17 @@ public class BookSpecifications {
             if (min != null && max != null) return cb.between(root.get("price"), min, max);
             if (min != null) return cb.greaterThanOrEqualTo(root.get("price"), min);
             return cb.lessThanOrEqualTo(root.get("price"), max);
+        };
+    }
+
+    public Specification<Book> search(String query) {
+        return (root, q, cb) -> {
+            if (query == null || query.isBlank()) return null;
+            String pattern = "%" + query.toLowerCase() + "%";
+            return cb.or(
+                    cb.like(cb.lower(root.get("name")), pattern),
+                    cb.like(cb.lower(root.get("author")), pattern)
+            );
         };
     }
 }

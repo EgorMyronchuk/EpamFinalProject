@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
+import com.epam.rd.autocode.spring.project.dto.filterDTO.BookFilter;
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
@@ -112,5 +113,19 @@ public class BookServiceImpl implements BookService {
                 .toList();
     }
 
+    @Override
+    public Page<BookRes> getFilteredBooks(BookFilter filter, Pageable pageable) {
+        var spec = Specification.where(bookSpecifications.search(filter.getQuery()))
+                .and(bookSpecifications.hasGenres(filter.getGenres()))
+                .and(bookSpecifications.hasAgeGroups(filter.getAgeGroups()))
+                .and(bookSpecifications.hasLanguages(filter.getLanguages()))
+                .and(bookSpecifications.priceBetween(filter.getMinPrice(), filter.getMaxPrice()));
+
+        return bookRepository.findAll(spec, pageable).map(bookMapper::toDto);
+    }
+
+    public List<String> getUniqueGenres() {
+        return bookRepository.findDistinctGenres();
+    }
 
 }

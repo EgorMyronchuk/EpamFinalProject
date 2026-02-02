@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <title th:text="#{nav.books}">Books</title>
+    <div th:replace="~{fragments/navbar :: lang-button}"></div>
+    <div th:replace="~{fragments/navbar :: nav-menu}"></div>
+    <div th:replace="~{fragments/navbar :: search-bar('books')}"></div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding-top: 100px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 30px;
+        }
+
+        /* Sidebar Filters */
+        .sidebar {
+            width: 300px;
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .filter-group { margin-bottom: 20px; }
+
+        /* Стили для шторок (details) */
+        details summary {
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            cursor: pointer;
+            font-weight: bold;
+            color: #1a2a6c;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        details summary::-webkit-details-marker { display: none; }
+        details summary::after { content: '▼'; font-size: 10px; transition: 0.3s; }
+        details[open] summary::after { transform: rotate(180deg); }
+
+        .scroll-box {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px 5px;
+        }
+
+        .price-inputs { display: flex; gap: 10px; align-items: center; padding: 10px 0; }
+        .price-inputs input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .checkbox-item input { margin-right: 10px; }
+
+        /* Контентная часть */
+        .content { flex: 1; }
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+        }
+
+        .book-card {
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+        }
+
+        .book-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .book-title { font-weight: 700; font-size: 16px; margin: 10px 0; color: #333; }
+        .book-author { color: #777; font-size: 14px; margin-bottom: 10px; }
+        .book-price { font-size: 18px; color: #0052D4; font-weight: 800; }
+
+        .load-more-container {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-apply {
+            width: 100%;
+            margin-top: 10px;
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        @media (max-width: 992px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+
+<div class="container">
+    <aside class="sidebar">
+        <form th:action="@{/books}" method="GET" id="filterForm">
+            <h3 th:text="#{books.filters}">Filters</h3>
+
+            <details open class="filter-group">
+                <summary th:text="#{books.filter.price}">Price</summary>
+                <div class="price-inputs">
+                    <input type="number" name="minPrice" th:value="${filter.minPrice}" th:placeholder="#{books.filter.min}">
+                    <span>-</span>
+                    <input type="number" name="maxPrice" th:value="${filter.maxPrice}" th:placeholder="#{books.filter.max}">
+                </div>
+            </details>
+
+            <details open class="filter-group">
+                <summary th:text="#{books.filter.genre}">Genres</summary>
+                <div class="scroll-box">
+                    <div th:each="genre : ${allGenres}" class="checkbox-item">
+                        <input type="checkbox" name="genres" th:value="${genre}"
+                               th:id="'g-'+${genre}"
+                               th:checked="${filter.genres != null && filter.genres.contains(genre)}">
+                        <label th:for="'g-'+${genre}" th:text="${genre}">Genre</label>
+                    </div>
+                </div>
+            </details>
+
+            <details class="filter-group">
+                <summary th:text="#{books.filter.age}">Age</summary>
+                <div class="scroll-box">
+                    <div th:each="age : ${ageGroups}" class="checkbox-item">
+                        <input type="checkbox" name="ageGroups" th:value="${age}"
+                               th:id="'a-'+${age}"
+                               th:checked="${filter.ageGroups != null && filter.ageGroups.contains(age)}">
+                        <label th:for="'a-'+${age}" th:text="#{ 'AgeGroup.' + ${age} }"></label>
+                    </div>
+                </div>
+            </details>
+
+            <details class="filter-group">
+                <summary th:text="#{books.filter.language}">Language</summary>
+                <div class="scroll-box">
+                    <div th:each="lang : ${languages}" class="checkbox-item">
+                        <input type="checkbox" name="languages" th:value="${lang}"
+                               th:id="'l-'+${lang}"
+                               th:checked="${filter.languages != null && filter.languages.contains(lang)}">
+                        <label th:for="'l-'+${lang}" th:text="#{ 'Language.' + ${lang} }"></label>
+                    </div>
+                </div>
+            </details>
+
+            <button type="submit" class="btn-apply" th:text="#{books.filter.apply}">Apply</button>
+        </form>
+    </aside>
+
+    <main class="content">
+        <div class="books-grid">
+            <div th:each="book : ${books}" class="book-card">
+                <img th:src="${book.photoUrl}" alt="Book cover">
+                <div class="book-title" th:text="${book.name}">Book Name</div>
+                <div class="book-author" th:text="${book.author}">Author</div>
+                <div class="book-price" th:text="${book.price + ' UAH'}">Price</div>
+            </div>
+
+            <div class="load-more-container" th:if="${hasNext}">
+                <a th:href="@{/books(
+                    genres=${filter.genres},
+                    ageGroups=${filter.ageGroups},
+                    languages=${filter.languages},
+                    minPrice=${filter.minPrice},
+                    maxPrice=${filter.maxPrice},
+                    size=${filter.size + 12}
+                )}" class="btn-apply" style="text-decoration: none; display: inline-block; width: auto; padding: 12px 30px;">
+                    <span th:text="#{books.load_more}">Load More</span>
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

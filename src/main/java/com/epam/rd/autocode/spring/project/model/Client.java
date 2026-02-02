@@ -20,6 +20,10 @@ public class Client {
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
+    private String phoneNumber;
+
+    private String deliveryAddress;
+
     private BigDecimal balance = BigDecimal.ZERO;
 
     public Client(User user) {

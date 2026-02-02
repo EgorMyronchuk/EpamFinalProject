@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.spring.project.service;
 
+import com.epam.rd.autocode.spring.project.dto.filterDTO.BookFilter;
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import org.springframework.data.domain.Page;
@@ -26,5 +27,10 @@ public interface BookService {
     List<BookRes> findForChild(Pageable pageable);
 
     List<BookRes> findNew(Pageable pageable);
+
+    Page<BookRes> getFilteredBooks(BookFilter bookFilter, Pageable pageable);
+
+    List<String> getUniqueGenres();
+
 
 }

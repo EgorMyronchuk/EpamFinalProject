@@ -14,6 +14,7 @@ import com.epam.rd.autocode.spring.project.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +69,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
 
-        userRepository.delete(user);
+        user.setActive(false);
+        user.setDeletedAt(LocalDateTime.now());
+
+        userRepository.save(user);
     }
+
+
 }

@@ -15,15 +15,8 @@ public class UserRes {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String password;
-
     @NotBlank(message = "Name is required")
     private String name;
 
-    @NotNull(message = "Balance is required")
-    @DecimalMin(value = "0.0", inclusive = true, message = "Balance must be non-negative")
-    private BigDecimal balance;
 }
 

@@ -4,6 +4,7 @@ import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.model.Employee;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {

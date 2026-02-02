@@ -4,6 +4,7 @@ import com.epam.rd.autocode.spring.project.dto.execptionDTO.ErrorResp;
 import com.epam.rd.autocode.spring.project.dto.request.auth.SignInReq;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
+import com.epam.rd.autocode.spring.project.exception.UserAccountDisabledException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,14 @@ public class GlobalExceptionHandler {
         model.addAttribute("signInReq", new SignInReq());
 
         model.addAttribute("loginError", "Невірна пошта або пароль");
+        return "login";
+    }
+
+    @ExceptionHandler(UserAccountDisabledException.class)
+    public String handleBaUserAccountDisabledException(BadCredentialsException ex, Model model) {
+        model.addAttribute("signInReq", new SignInReq());
+
+        model.addAttribute("loginError", "Аккаунт заблоковано або він бу видалений");
         return "login";
     }
 }
