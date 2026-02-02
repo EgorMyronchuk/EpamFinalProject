@@ -5,6 +5,7 @@ import com.epam.rd.autocode.spring.project.service.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,14 +22,12 @@ public class HomeController {
 
     @GetMapping
     public String homeLoad(org.springframework.ui.Model model) {
-        Pageable limitTen = PageRequest.of(0, 10);
+        Pageable sortById = PageRequest.of(0, 10, Sort.by("id").descending());
+        
+        List<BookRes> bestSellers = bookService.findBestSellers(sortById);
+        List<BookRes> newArrivals = bookService.findNew(sortById);
+        List<BookRes> forChild = bookService.findForChild(sortById);
 
-        // Собираем все данные сразу
-        List<BookRes> bestSellers = bookService.findBestSellers(limitTen);
-        List<BookRes> newArrivals = bookService.findNew(limitTen);
-        List<BookRes> forChild = bookService.findForChild(limitTen);
-
-        // Добавляем в модель под разными именами
         model.addAttribute("bestSellers", bestSellers);
         model.addAttribute("newArrivals", newArrivals);
         model.addAttribute("forChild", forChild);

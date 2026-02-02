@@ -71,10 +71,6 @@ public class AuthenticationService {
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
 
-        if (!principal.getUser().isActive()) {
-            throw new UserAccountDisabledException("Account is disabled");
-        }
-
         String jwt = jwtService.generateToken(principal);
         return new JwtAuthenticationResponse(jwt);
     }

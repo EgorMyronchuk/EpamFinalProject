@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -33,11 +34,11 @@ public class GlobalExceptionHandler {
         return "login";
     }
 
-    @ExceptionHandler(UserAccountDisabledException.class)
-    public String handleBaUserAccountDisabledException(BadCredentialsException ex, Model model) {
+    @ExceptionHandler(DisabledException.class)
+    public String handleBaUserAccountDisabledException(DisabledException ex, Model model) {
         model.addAttribute("signInReq", new SignInReq());
 
-        model.addAttribute("loginError", "Аккаунт заблоковано або він бу видалений");
+        model.addAttribute("loginError", "Аккаунт заблоковано або він був видалений");
         return "login";
     }
 }
