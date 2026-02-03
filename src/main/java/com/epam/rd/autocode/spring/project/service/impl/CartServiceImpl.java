@@ -1,11 +1,9 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.cart.CartRes;
 import com.epam.rd.autocode.spring.project.exception.CartException;
-import com.epam.rd.autocode.spring.project.model.Book;
-import com.epam.rd.autocode.spring.project.model.Cart;
-import com.epam.rd.autocode.spring.project.model.CartItem;
-import com.epam.rd.autocode.spring.project.model.User;
+import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.service.CartService;
@@ -16,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -26,9 +25,15 @@ public class CartServiceImpl implements CartService {
     private final BookRepository bookRepository;
 
     @Override
-    public Cart getCart(Long  userId) {
-      return cartRepository.findByUserId(userId)
-              .orElseThrow(() -> new CartException("Cart not found"));
+    public CartRes getCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new CartException("Cart not found"));
+
+        BigDecimal totalPrice = cart.getItems().stream()
+                .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return new CartRes(cart.getItems(), totalPrice);
     }
 
     public Long getQuantityItemsInCart(Long userId) {
@@ -39,16 +44,17 @@ public class CartServiceImpl implements CartService {
                 .orElse(0L);
     }
 
-    // В сервисе
+
     @Override
     @Transactional
-    public boolean addCartItem(Long bookId, User user) {
+    public boolean addCartItem(Long bookId, Long userId , int delta) {
         // 1. Находим книгу
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
         // 2. Получаем корзину пользователя
-        Cart cart = getCart(user.getId());
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new CartException("NotCurt found"));
 
         // 3. Проверяем, есть ли уже такая книга в корзине
         Optional<CartItem> existingItem = cart.getItems().stream()
@@ -58,7 +64,7 @@ public class CartServiceImpl implements CartService {
         if (existingItem.isPresent()) {
             // Если есть — увеличиваем количество
             CartItem item = existingItem.get();
-            item.setQuantity(item.getQuantity() + 1);
+            item.setQuantity(item.getQuantity() + delta);
         } else {
             // Если нет — создаем новый элемент
             CartItem newItem = new CartItem();
@@ -73,17 +79,26 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public boolean plusOneToCartItem(BookReq bookReq) {
-        return false;
+    @Transactional
+    public void plusOneToCartItem(Long bookId, Long userId) {
+        System.out.println("Я тут бул плюс");
+        addCartItem(bookId, userId, 1);
     }
 
     @Override
-    public boolean minusOneToCartItem(BookReq bookReq) {
-        return false;
+    @Transactional
+    public void minusOneToCartItem(Long bookId, Long userId) {
+        addCartItem(bookId, userId, -1);
     }
 
     @Override
-    public boolean removeCartItem(BookReq bookReq) {
-        return false;
+    @Transactional
+    public void removeCartItem(Long bookId, Long userID) {
+        Cart cart = cartRepository.findByUserId(userID)
+                .orElseThrow(() -> new CartException("Cart not found"));
+        System.out.println("Я тут бул ремув");
+        cart.getItems().removeIf(item -> item.getBook().getId().equals(bookId));
+        cartRepository.save(cart);
     }
+
 }

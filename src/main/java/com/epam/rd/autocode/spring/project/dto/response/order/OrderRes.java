@@ -19,7 +19,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRes {
-    
+
+    private Long id;
+
     private String clientEmail;
 
     private LocalDateTime orderDate;
@@ -28,5 +30,5 @@ public class OrderRes {
 
     private List<BookItemDTO> bookItems;
 
-    private OrderStatus order;
+    private OrderStatus status;
 }

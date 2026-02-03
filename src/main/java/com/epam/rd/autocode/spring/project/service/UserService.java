@@ -17,4 +17,6 @@ public interface UserService {
     void deleteUserByEmail(String email);
 
     UserRes saveUser(CreateUserReq user);
+
+    Long getUserIdByEmail(String email);
 }

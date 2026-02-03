@@ -46,9 +46,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserRes getUserByEmail(String email) {
-        Optional<User> client = userRepository.findByEmail(email);
-        if (client.isPresent()) {
-            return userMapper.toDto(client.get());
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return userMapper.toDto(user.get());
+        }
+        throw new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND);
+    }
+
+    @Override
+    public Long getUserIdByEmail(String email) {
+        Optional<User> user = userRepository.findByEmail(email);
+        if (user.isPresent()) {
+            return user.get().getId();
         }
         throw new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND);
     }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{orders.title}">Cart</title>
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <style>
+        body { background-color: #f4f7f6; padding-top: 100px; font-family: 'Segoe UI', sans-serif; }
+        .cart-container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        .cart-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+
+        .cart-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #eee;
+            gap: 20px;
+        }
+
+        .item-img { width: 80px; height: 110px; object-fit: cover; border-radius: 8px; }
+        .item-info { flex: 1; }
+        .item-name { font-weight: 700; font-size: 18px; color: #333; margin-bottom: 5px; }
+        .item-author { color: #777; font-size: 14px; }
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #f8f9fa;
+            padding: 5px 15px;
+            border-radius: 50px;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #1a2a6c;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .qty-btn:hover { transform: scale(1.2); }
+
+        .item-price { font-weight: 800; font-size: 18px; min-width: 100px; text-align: right; }
+
+        .remove-btn {
+            background: #ff7675;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: 0.3s;
+        }
+        .remove-btn:hover { background: #d63031; }
+
+        .cart-footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-price { font-size: 24px; font-weight: 800; color: #1a2a6c; }
+
+        .btn-checkout {
+            background: linear-gradient(135deg, #1a2a6c 0%, #0052D4 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+        .btn-checkout:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(26,42,108,0.3); }
+
+        .empty-state { text-align: center; padding: 50px; color: #777; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+<div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+<div class="cart-container">
+    <div class="cart-card">
+        <h2 th:text="#{orders.title}">Shopping Cart</h2>
+
+        <div th:if="${#lists.isEmpty(cart.items)}" class="empty-state">
+            <p th:text="#{orders.empty}">Your cart is empty</p>
+        </div>
+
+        <div th:each="item : ${cart.items}" class="cart-item">
+            <img th:src="${item.book.photoUrl}" class="item-img" alt="Book Cover">
+
+            <div class="item-info">
+                <div class="item-name" th:text="${item.book.name}">Book Title</div>
+                <div class="item-author" th:text="${item.book.author}">Author</div>
+
+                <form th:action="@{/cart/remove}" method="POST" style="margin-top: 10px;">
+                    <input type="hidden" name="bookId" th:value="${item.book.id}">
+                    <button type="submit" class="remove-btn" th:text="#{orders.remove}">Remove</button>
+                </form>
+            </div>
+
+            <div class="quantity-controls">
+                <form th:action="@{/cart/minus}" method="POST">
+                    <input type="hidden" name="bookId" th:value="${item.book.id}">
+                    <button type="submit" class="qty-btn" th:disabled="${item.quantity <= 1}">−</button>
+                </form>
+
+                <span th:text="${item.quantity}" style="font-weight: 700;">1</span>
+
+                <form th:action="@{/cart/plus}" method="POST">
+                    <input type="hidden" name="bookId" th:value="${item.book.id}">
+                    <button type="submit" class="qty-btn">+</button>
+                </form>
+            </div>
+
+            <div class="item-price" th:text="${item.book.price * item.quantity + ' ₴'}">0 ₴</div>
+        </div>
+
+        <div class="cart-footer" th:if="${not #lists.isEmpty(cart.items)}">
+            <div>
+                <span th:text="#{orders.total}" style="color: #777;">Total:</span>
+                <div class="total-price" th:text="${cart.totalPrice + ' ₴'}">0 ₴</div>
+            </div>
+
+            <form th:action="@{/orders/create}" method="POST">
+                <button type="submit" class="btn-checkout" th:text="#{orders.checkout}">Checkout</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -5,7 +5,9 @@ import com.epam.rd.autocode.spring.project.dto.mapper.OrderMapper;
 import com.epam.rd.autocode.spring.project.dto.request.order.OrderReq;
 import com.epam.rd.autocode.spring.project.dto.response.order.OrderRes;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
+import com.epam.rd.autocode.spring.project.exception.NotEnoughMoneyException;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
+import com.epam.rd.autocode.spring.project.exception.OrderCustomException;
 import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
@@ -84,6 +86,23 @@ public class OrderServiceImpl implements OrderService {
         cart.getItems().clear();
         cartRepository.save(cart);
 
+        if (client.getBalance().compareTo(totalPrice) < 0) {
+            throw new NotEnoughMoneyException("You don`t have enough money");
+        }
+
+        BigDecimal balanceAfterDeposit = client.getBalance().subtract(totalPrice);
+        client.setBalance(balanceAfterDeposit);
+
+        clientRepository.save(client);
         return savedOrder;
+    }
+
+    public void deleteOrder (Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderCustomException("Not Found Order by this Id"));
+
+        order.setStatus(OrderStatus.CANCELED);
+
+        orderRepository.save(order);
     }
 }

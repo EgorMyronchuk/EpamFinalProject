@@ -1,23 +1,24 @@
 package com.epam.rd.autocode.spring.project.service;
 
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.cart.CartRes;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.model.Cart;
 import com.epam.rd.autocode.spring.project.model.User;
 
 public interface CartService {
 
-    public Cart getCart(Long userId);
+    public CartRes getCart(Long userId);
 
-    boolean addCartItem(Long bookId, User user);
+    boolean addCartItem(Long bookId, Long userId , int delta);
 
     Long getQuantityItemsInCart(Long bookId);
 
-    public boolean plusOneToCartItem(BookReq bookReq);
+    public void plusOneToCartItem(Long bookId, Long userId);
 
-    public boolean minusOneToCartItem(BookReq bookReq);
+    public void minusOneToCartItem(Long bookId, Long userId);
 
-    public boolean removeCartItem(BookReq bookReq);
+    public void removeCartItem(Long bookId, Long userId);
 
 
 }

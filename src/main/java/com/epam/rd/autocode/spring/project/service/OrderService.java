@@ -14,4 +14,6 @@ public interface OrderService {
     List<OrderRes> getOrdersByEmployee(String employeeEmail);
 
     Order createOrder(Long clientId);
+
+    void deleteOrder (Long orderId);
 }
