@@ -35,6 +35,6 @@ public class Order {
     private BigDecimal price;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<BookItem> bookItems;
+    private List<CartItem> bookItems;
 
 }
