@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/cart-button.css}">
     <title th:text="#{nav.home}">Home</title>
     <style>
         body {
@@ -126,10 +127,17 @@
                 <img th:src="${book.photoUrl}" alt="Book Cover">
                 <div class="book-info">
                     <h3 th:text="${book.name}">Назва книги</h3>
-                    <p th:text="${book.author}">Автор</p>
+
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <p th:text="${book.author}" style="margin: 0;">Автор</p>
+                        <form th:action="@{/cart/add}" method="POST" style="display: inline;">
+                            <input type="hidden" name="bookId" th:value="${book.id}">
+                            <button type="submit" class="add-to-cart-btn">+</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="book-price" th:text="${book.price} + ' грн'"></div>
+            <div class="book-price" th:text="${book.price} + ' ₴'"></div>
         </div>
     </div>
 

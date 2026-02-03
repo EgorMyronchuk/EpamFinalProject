@@ -1,5 +1,6 @@
 package com.epam.rd.autocode.spring.project.model;
 
+import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,11 +31,13 @@ public class Order {
     @JoinColumn(name = "employee_id")
     private Employee employee;
 
+    private OrderStatus status;
+
     private LocalDateTime orderDate;
 
     private BigDecimal price;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-    private List<CartItem> bookItems;
+    private List<BookItem> bookItems;
 
 }

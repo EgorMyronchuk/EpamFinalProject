@@ -8,9 +8,11 @@ import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.exception.UserAccountDisabledException;
+import com.epam.rd.autocode.spring.project.model.Cart;
 import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.model.UserPrincipal;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
+import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.transaction.Transactional;
@@ -31,6 +33,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService {
     private final UserRepository userRepository;
+    private final CartRepository cartRepository;
     private final JwtService jwtService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -53,6 +56,8 @@ public class AuthenticationService {
         user.setClientProfile(client);
 
         userRepository.save(user);
+        Cart cart = new Cart(user);
+        cartRepository.save(cart);
 
         UserDetails userDetails = new UserPrincipal(user);
         String jwt = jwtService.generateToken(userDetails);

@@ -81,7 +81,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         }
                     }
                     response.sendRedirect("/login");
-                    return; // важно завершить фильтр здесь
+                    return;
                 }
             }
         }

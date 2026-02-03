@@ -41,5 +41,6 @@ public class GlobalExceptionHandler {
         model.addAttribute("loginError", "Аккаунт заблоковано або він був видалений");
         return "login";
     }
+
 }
 

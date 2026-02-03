@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 public class BookRes {
 
+    private Long id;
+
     private String photoUrl;
 
     private String author;

@@ -1,8 +1,10 @@
 package com.epam.rd.autocode.spring.project.conf;
 
+import com.epam.rd.autocode.spring.project.model.Cart;
 import com.epam.rd.autocode.spring.project.model.Client;
 import com.epam.rd.autocode.spring.project.model.User;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
+import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +17,7 @@ import java.math.BigDecimal;
 public class DataInitializer {
 
     @Bean
-    public CommandLineRunner initUsers(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initUsers(UserRepository userRepository, CartRepository cartRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userRepository.findByRole(Role.ROLE_ADMIN).isEmpty()) {
                 User admin = new User();
@@ -37,12 +39,14 @@ public class DataInitializer {
                 user.setPassword(passwordEncoder.encode("Egor2004"));
                 user.setName("Egor");
                 user.setRole(Role.ROLE_USER);
-
+                //////// ВИТЯГНУТИ З ИНВР СЮДИ ,ЩОБ БЕЗ КРЕД БУЛО ТУТ хочаб паролі
                 Client clientProfile = new Client(user);
                 clientProfile.setBalance(new BigDecimal("100.00"));
                 user.setClientProfile(clientProfile);
-
                 userRepository.save(user);
+
+                Cart cart = new Cart(user);
+                cartRepository.save(cart);
             }
 
         };

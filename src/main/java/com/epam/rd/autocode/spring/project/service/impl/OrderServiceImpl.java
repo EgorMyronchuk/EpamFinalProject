@@ -6,10 +6,9 @@ import com.epam.rd.autocode.spring.project.dto.request.order.OrderReq;
 import com.epam.rd.autocode.spring.project.dto.response.order.OrderRes;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.model.Client;
-import com.epam.rd.autocode.spring.project.model.Employee;
-import com.epam.rd.autocode.spring.project.model.Order;
-import com.epam.rd.autocode.spring.project.model.User;
+import com.epam.rd.autocode.spring.project.model.*;
+import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
+import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.repo.ClientRepository;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.repo.OrderRepository;
@@ -17,20 +16,24 @@ import com.epam.rd.autocode.spring.project.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
+    private final CartRepository cartRepository;
+    private final ClientRepository clientRepository;
     private final OrderMapper orderMapper;
-    private final ClientRepository userRepository;
     private final EmployeeRepository employeeRepository;
 
     @Override
     public List<OrderRes> getOrdersByClient(String clientEmail) {
-        Client client = userRepository.findByUserEmail(clientEmail)
+        Client client = clientRepository.findByUserEmail(clientEmail)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
 
         return orderRepository.findOrdersByClient(client).stream()
@@ -48,10 +51,39 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
-    @Override
-    public OrderRes addOrder(OrderReq orderDTO) {
-        Order order = orderMapper.toEntity(orderDTO);
+    public Order createOrder(Long userId) {
+        // 1. Находим корзину
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Cart not found"));
 
-        return orderMapper.toDto(orderRepository.save(order));
+        Client client = clientRepository.findByUserId(userId);
+        // 2. Создаем новый заказ
+        Order order = new Order();
+        order.setClient(client);
+        order.setOrderDate(LocalDateTime.now());
+
+        // 3. Переносим товары из корзины в заказ
+        List<BookItem> orderItems = cart.getItems().stream().map(cartItem -> {
+            BookItem orderItem = new BookItem();
+            orderItem.setBook(cartItem.getBook());
+            orderItem.setQuantity(cartItem.getQuantity());
+            orderItem.setOrder(order);
+            return orderItem;
+        }).collect(Collectors.toList());
+
+        order.setBookItems(orderItems);
+
+        BigDecimal totalPrice = orderItems.stream()
+                .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+        order.setPrice(totalPrice);
+
+        order.setStatus(OrderStatus.PENDING);
+        Order savedOrder = orderRepository.save(order);
+
+        cart.getItems().clear();
+        cartRepository.save(cart);
+
+        return savedOrder;
     }
 }
