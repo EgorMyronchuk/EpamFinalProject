@@ -2,6 +2,7 @@ package com.epam.rd.autocode.spring.project.conf;
 
 import com.epam.rd.autocode.spring.project.model.Cart;
 import com.epam.rd.autocode.spring.project.model.Client;
+import com.epam.rd.autocode.spring.project.model.Employee;
 import com.epam.rd.autocode.spring.project.model.User;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
@@ -19,26 +20,34 @@ public class DataInitializer {
     @Bean
     public CommandLineRunner initUsers(UserRepository userRepository, CartRepository cartRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            if (userRepository.findByRole(Role.ROLE_ADMIN).isEmpty()) {
+            if (userRepository.findByRole(Role.ADMIN).isEmpty()) {
                 User admin = new User();
                 admin.setEmail("adminadmin@gmail.com");
                 admin.setPassword(passwordEncoder.encode("Admin_pass"));
-                admin.setRole(Role.ROLE_ADMIN);
+                admin.setRole(Role.ADMIN);
                 userRepository.save(admin);
             }
             if (userRepository.findByEmail("employee@gmail.com").isEmpty()) {
                 User employee = new User();
                 employee.setEmail("employee@gmail.com");
                 employee.setPassword(passwordEncoder.encode("Employee"));
-                employee.setRole(Role.ROLE_EMPLOYEE);
+                employee.setRole(Role.EMPLOYEE);
+                employee.setActive(true); // Обязательно, так как в UserPrincipal есть isEnabled()
+
+                Employee employeeProfile = new Employee(employee);
+                employee.setEmployeeProfile(employeeProfile);
+
                 userRepository.save(employee);
+
+                Cart cart = new Cart(employee);
+                cartRepository.save(cart);
             }
             if (userRepository.findByEmail("egormyronchuk@gmail.com").isEmpty()) {
                 User user = new User();
                 user.setEmail("egormyronchuk@gmail.com");
                 user.setPassword(passwordEncoder.encode("Egor2004"));
                 user.setName("Egor");
-                user.setRole(Role.ROLE_USER);
+                user.setRole(Role.USER);
                 //////// ВИТЯГНУТИ З ИНВР СЮДИ ,ЩОБ БЕЗ КРЕД БУЛО ТУТ хочаб паролі
                 Client clientProfile = new Client(user);
                 clientProfile.setBalance(new BigDecimal("100.00"));

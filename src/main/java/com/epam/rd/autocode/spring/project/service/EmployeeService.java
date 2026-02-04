@@ -7,13 +7,7 @@ import java.util.List;
 
 public interface EmployeeService {
 
-    List<EmployeeRes> getAllEmployees();
+    void blockUserByEmail(String email);
 
-    EmployeeRes getEmployeeByEmail(String email);
-
-    EmployeeRes updateEmployeeByEmail(String email, EmployeeReq employee);
-
-    void deleteEmployeeByEmail(String email);
-
-    EmployeeRes addEmployee(EmployeeReq employee);
+    void unBlockUserByEmail(String email);
 }

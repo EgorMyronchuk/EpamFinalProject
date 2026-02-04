@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -17,6 +18,8 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookFullResp {
 
+    private String photoUrl;
+
     private String name;
 
     private String genre;
@@ -25,6 +28,7 @@ public class BookFullResp {
 
     private BigDecimal price;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
     private String author;

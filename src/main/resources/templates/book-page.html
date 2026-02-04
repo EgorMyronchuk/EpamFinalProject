@@ -198,8 +198,9 @@
         <div class="books-grid">
             <div th:each="book : ${books}" class="book-card">
                 <img th:src="${book.photoUrl}" alt="Book cover">
-                <div class="book-title" th:text="${book.name}">Book Name</div>
-
+                <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none;">
+                    <div class="book-title" th:text="${book.name}" style="color: #1a2a6c; cursor: pointer;">Book Name</div>
+                </a>
                 <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 10px;">
                     <div class="book-author" th:text="${book.author}" style="margin-bottom: 0;">Author</div>
 

@@ -8,7 +8,7 @@ import java.util.Locale;
 
 public interface ClientService {
 
-    public BigDecimal getBalanceInCurrentLocale(String email, Locale locale);
+    void changeBalance(String email, BigDecimal newBalance);
 
-    public ClientRes getClientByEmail(String email);
+    BigDecimal getBalance(String email);
 }

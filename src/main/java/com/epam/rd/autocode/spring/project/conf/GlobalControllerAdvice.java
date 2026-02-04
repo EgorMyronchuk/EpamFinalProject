@@ -3,7 +3,11 @@ package com.epam.rd.autocode.spring.project.conf;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.CartService;
 import com.epam.rd.autocode.spring.project.service.ClientService;
+import com.epam.rd.autocode.spring.project.utils.CurrencyConverter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -21,9 +25,33 @@ public class GlobalControllerAdvice {
     private final ClientService clientService;
 
     @ModelAttribute("userBalance")
-    public BigDecimal addBalanceToModel(Principal principal, Locale locale) {
-        if (principal == null) return null;
-        return clientService.getBalanceInCurrentLocale(principal.getName(), locale);
+    public BigDecimal addBalanceToModel(Locale locale) {
+        try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+            if (auth == null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken) {
+                return null;
+            }
+
+            String email = auth.getName();
+
+            boolean isClient = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ROLE_USER"));
+
+            if (isClient) {
+                BigDecimal balance = clientService.getBalance(email);
+
+                if ("uk".equals(locale.getLanguage())) {
+                    return balance;
+                }
+
+                return CurrencyConverter.exchangeUahToUsd(balance);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Помилка при отримані баланса: " + e.getMessage());
+        }
+        return null;
     }
 
     @ModelAttribute("cartItemsCount")

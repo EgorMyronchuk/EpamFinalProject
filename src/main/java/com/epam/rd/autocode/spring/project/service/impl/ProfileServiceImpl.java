@@ -1,17 +1,16 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
-import com.epam.rd.autocode.spring.project.dto.mapper.ClientMapper;
 import com.epam.rd.autocode.spring.project.dto.mapper.ProfileMapper;
 import com.epam.rd.autocode.spring.project.dto.request.client.ClientBusModelReq;
-import com.epam.rd.autocode.spring.project.dto.request.client.ClientBusModelRes;
-import com.epam.rd.autocode.spring.project.dto.response.client.ClientRes;
-import com.epam.rd.autocode.spring.project.dto.response.user.UserRes;
+import com.epam.rd.autocode.spring.project.dto.request.employee.EmployeeBusModelReq;
+import com.epam.rd.autocode.spring.project.dto.response.client.ClientBusModelRes;
+import com.epam.rd.autocode.spring.project.dto.response.employee.EmployeeBusModelRes;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.Client;
-import com.epam.rd.autocode.spring.project.model.User;
+import com.epam.rd.autocode.spring.project.model.Employee;
 import com.epam.rd.autocode.spring.project.repo.ClientRepository;
-import com.epam.rd.autocode.spring.project.service.ClientService;
+import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.service.ProfileService;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.transaction.Transactional;
@@ -22,8 +21,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ProfileServiceImpl implements ProfileService {
 
-    private final UserService userService;
     private final ClientRepository clientRepository;
+    private final EmployeeRepository employeeRepository;
     private final ProfileMapper profileMapper;
 
     @Override
@@ -32,6 +31,14 @@ public class ProfileServiceImpl implements ProfileService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
 
         return profileMapper.toBusModel(client);
+    }
+
+    @Override
+    public EmployeeBusModelRes getProfileForEmployeeByEmail(String email) {
+        Employee employee = employeeRepository.findByUserEmail(email)
+                .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
+
+        return profileMapper.toBusModelForEmployee(employee);
     }
 
     @Override
@@ -47,6 +54,21 @@ public class ProfileServiceImpl implements ProfileService {
         clientRepository.save(client);
 
         return profileMapper.toBusModel(client);
+    }
+
+    @Override
+    @Transactional
+    public EmployeeBusModelRes updateEmployeeByEmail(String email, EmployeeBusModelReq updateDto) {
+        Employee employee = employeeRepository.findByUserEmail(email).orElseThrow();
+
+        employee.setPhone(updateDto.getPhone());
+        employee.setBirthDate(updateDto.getBirthDate());
+
+        employee.getUser().setName(updateDto.getName());
+
+        employeeRepository.save(employee);
+
+        return profileMapper.toBusModelForEmployee(employee);
     }
 
 }

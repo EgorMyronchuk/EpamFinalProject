@@ -50,14 +50,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             String username = jwtService.extractEmailName(jwt);
 
             if (StringUtils.hasText(username)) {
                 try {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
                     if (jwtService.isTokenValid(jwt, userDetails)) {
                         UsernamePasswordAuthenticationToken authToken =
                                 new UsernamePasswordAuthenticationToken(
@@ -80,12 +78,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                             }
                         }
                     }
-                    response.sendRedirect("/login");
+                    response.sendRedirect("/auth/login");
                     return;
                 }
             }
         }
-
         filterChain.doFilter(request, response);
     }
 }

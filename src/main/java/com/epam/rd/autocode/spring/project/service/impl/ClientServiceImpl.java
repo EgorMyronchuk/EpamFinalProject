@@ -24,27 +24,18 @@ import static com.epam.rd.autocode.spring.project.utils.CurrencyConverter.exchan
 public class ClientServiceImpl implements ClientService {
 
     private final ClientRepository clientRepository;
-    private final ClientMapper clientMapper;
 
-    @Override
-    public BigDecimal getBalanceInCurrentLocale(String email, Locale locale) {
-        Client client = clientRepository.findByUserEmail(email)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
+    public void changeBalance(String email, BigDecimal newBalance) {
+       Client client = clientRepository.findByUserEmail(email)
+               .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
 
-        BigDecimal balance = client.getBalance();
-        if (balance == null) balance = BigDecimal.ZERO;
-
-        if (locale.getLanguage().equals("en")) {
-            return exchangeUahToUsd(balance);
-        }
-        return balance;
+       client.setBalance(newBalance);
+       clientRepository.save(client);
     }
 
-    @Override
-    public ClientRes getClientByEmail(String email) {
+    public BigDecimal getBalance(String email) {
         Client client = clientRepository.findByUserEmail(email)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
-
-        return clientMapper.toDto(client);
+        return client.getBalance();
     }
 }

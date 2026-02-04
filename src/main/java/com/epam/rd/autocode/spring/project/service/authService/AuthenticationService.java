@@ -49,7 +49,7 @@ public class AuthenticationService {
         user.setEmail(request.getEmail());
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.ROLE_USER);
+        user.setRole(Role.USER);
         user.setActive(true);
 
         Client client = new Client(user);
@@ -75,7 +75,7 @@ public class AuthenticationService {
         );
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-
+        System.out.println("я тут был 1");
         String jwt = jwtService.generateToken(principal);
         return new JwtAuthenticationResponse(jwt);
     }

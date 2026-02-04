@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.util.Arrays;
+
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
@@ -23,6 +25,8 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResp> handleNotFoundException(NotFoundException ex) {
         log.debug("Route not found: {}", ex.getMessage());
+        System.out.println(Arrays.toString(ex.getStackTrace()));
+        System.out.println(ex.getMessage());
         return new ResponseEntity<>(new ErrorResp(ExceptionConstants.NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 

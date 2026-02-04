@@ -5,6 +5,7 @@ import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import com.epam.rd.autocode.spring.project.dto.mapper.BookMapper;
+import com.epam.rd.autocode.spring.project.exception.BookException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.Book;
@@ -45,24 +46,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookRes getBookByName(String name) {
-        Optional<Book> bookOpt = bookRepository.findByName(name);
-        if (bookOpt.isPresent()) {
-            return bookMapper.toDto(bookOpt.get());
-        }
-        throw new NotFoundException("Book with name :" + name + " not found");
-    }
-
-    @Override
     @Transactional
-    public BookRes updateBookByName(String name, BookReq bookReq) {
-
-        Book book = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Book with name: " + name + " not found"));
+    public BookRes updateBookById(Long id, BookReq bookReq ){
+        System.out.println("New Date from Request: " + bookReq.getPublicationDate());
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Book with id: " + id + " not found"));
 
         bookMapper.updateBookFromDto(bookReq, book);
 
         Book saved = bookRepository.save(book);
+
+        System.out.println("Date in Entity after mapping: " + book.getPublicationDate()); // ПРОВЕРКА
 
         return bookMapper.toDto(saved);
     }
@@ -74,22 +68,6 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.NOT_FOUND));
 
         bookRepository.delete(book);
-    }
-
-    @Override
-    public List<BookRes> findAllByAuthorAndName(String searchMessage) {
-        var spec = Specification.where(bookSpecifications.hasName(searchMessage))
-                .or(bookSpecifications.hasAuthor(searchMessage));
-
-        List<Book> books = bookRepository.findAll(spec);
-
-        if (books.isEmpty()) {
-            throw new NotFoundException(ExceptionConstants.BOOK_NOT_FOUND);
-        }
-
-        return books.stream()
-                .map(bookMapper::toDto)
-                .toList();
     }
 
     public List<BookRes> findBestSellers(Pageable limitTen) {
@@ -128,4 +106,10 @@ public class BookServiceImpl implements BookService {
         return bookRepository.findDistinctGenres();
     }
 
+    public BookFullResp getBookFull(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookException("Not found book with this Id"));
+
+        return bookMapper.toFullResp(book);
+    }
 }

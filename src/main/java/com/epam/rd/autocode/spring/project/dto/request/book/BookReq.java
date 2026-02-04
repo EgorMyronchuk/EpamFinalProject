@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -20,6 +21,8 @@ public class BookReq {
     @NotBlank(message = "Book name must not be blank")
     @Size(max = 255, message = "Book name must be less than 255 characters")
     private String name;
+
+    private String photoUrl;
 
     @NotBlank(message = "Genre must not be blank")
     @Size(max = 100, message = "Genre must be less than 100 characters")
@@ -35,6 +38,8 @@ public class BookReq {
 
     @NotNull(message = "Publication date must be specified")
     @PastOrPresent(message = "Publication date cannot be in the future")
+    @NotNull(message = "Date is required")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
     @NotBlank(message = "Author name must not be blank")
@@ -51,6 +56,9 @@ public class BookReq {
 
     @Size(max = 5000, message = "Description must be less than 5000 characters")
     private String description;
+
+    @Min(value = 1, message = "Price might be more then 0 ")
+    private Integer soldAmount;
 
     @NotNull(message = "Language must be specified")
     private Language language;

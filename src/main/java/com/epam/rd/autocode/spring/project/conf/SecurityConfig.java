@@ -5,6 +5,7 @@ import com.epam.rd.autocode.spring.project.service.authService.CustomUserDetails
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -34,8 +36,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http.csrf(AbstractHttpConfigurer::disable)
-                // Своего рода отключение CORS (разрешение запросов со всех доменов)
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfiguration = new CorsConfiguration();
                     corsConfiguration.setAllowedOriginPatterns(List.of("*"));
@@ -44,28 +46,43 @@ public class SecurityConfig {
                     corsConfiguration.setAllowCredentials(true);
                     return corsConfiguration;
                 }))
-                .headers(headers ->
-                        headers.frameOptions(frame -> frame.disable())
-                )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger resources/*", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/endpoint", "/admin/**").hasRole("ADMIN")
-                        .anyRequest().authenticated())
+
+                        .requestMatchers("/home/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
+                        .requestMatchers("/staff/**").hasAnyRole("EMPLOYEE", "ADMIN")
+                        .requestMatchers("/admin/**", "/endpoint").hasRole("ADMIN")
+
+                        .anyRequest().authenticated()
+                )
+
                 .logout(logout -> logout
                         .logoutUrl("/logout")
-                        .logoutSuccessUrl("/auth/login?logout")
-                        .deleteCookies("jwt")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.sendRedirect("/auth/login?logout");
+                        })
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("jwt", "JSESSIONID")
                         .permitAll()
                 )
-                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
+
+                .sessionManagement(manager ->
+                        manager.sessionCreationPolicy(STATELESS)
+                )
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
+
+
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {

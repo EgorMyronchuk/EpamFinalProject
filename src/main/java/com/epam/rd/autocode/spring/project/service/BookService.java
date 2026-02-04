@@ -2,6 +2,7 @@ package com.epam.rd.autocode.spring.project.service;
 
 import com.epam.rd.autocode.spring.project.dto.filterDTO.BookFilter;
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,15 +13,11 @@ public interface BookService {
 
     Page<BookRes> getAllBooks(Pageable pageable);
 
-    BookRes getBookByName(String name);
-
-    BookRes updateBookByName(String name, BookReq book);
+    BookRes updateBookById(Long id, BookReq bookReq );
 
     void deleteBookByName(String name);
 
     BookRes addBook(BookReq book);
-
-    List<BookRes> findAllByAuthorAndName(String author);
 
     List<BookRes> findBestSellers(Pageable pageable);
 
@@ -31,6 +28,10 @@ public interface BookService {
     Page<BookRes> getFilteredBooks(BookFilter bookFilter, Pageable pageable);
 
     List<String> getUniqueGenres();
+
+    BookFullResp getBookFull(Long bookId);
+
+
 
 
 }

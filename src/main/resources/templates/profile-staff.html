@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{nav.profile}">Staff Profile</title>
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <div th:replace="~{fragments/navbar :: lang-button}"></div>
+    <div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+    <style>
+        /* Используем те же стили, что и в твоем примере */
+        body { background-color: #f4f7f6; margin: 0; padding-top: 120px; font-family: 'Segoe UI', sans-serif; }
+        .main-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .profile-card { background: white; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); overflow: hidden; }
+        .profile-header { background: linear-gradient(135deg, #203a43, #2c5364); color: white; padding: 30px; }
+        .profile-body { padding: 40px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
+        .input-group label { font-weight: 700; margin-bottom: 8px; color: #444; font-size: 14px; }
+        .input-group input { padding: 12px; border: 2px solid #eee; border-radius: 10px; }
+        .input-group input[readonly] { background: #f9f9f9; }
+        .btn-update { background: #2c5364; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; }
+        .btn-update:hover { background: #203a43; transform: translateY(-2px); }
+        .staff-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 50px; font-size: 12px; text-transform: uppercase; }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/notifications :: toast}"></div>
+
+<div class="main-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="user-info">
+                <h2 th:text="${profile.name}">Staff Name</h2>
+                <p th:text="${profile.email}">staff@example.com</p>
+            </div>
+            <div class="staff-badge" th:text="${userRole}">ROLE_EMPLOYEE</div>
+        </div>
+
+        <div class="profile-body">
+            <form th:action="@{/profile/update-staff}" th:object="${profile}" method="post">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label th:text="#{auth.email}">Email</label>
+                        <input type="email" th:value="${profile.email}" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label th:text="#{auth.name}">Name</label>
+                        <input type="text" th:field="*{name}" required>
+                    </div>
+                    <div class="input-group">
+                        <label th:text="#{client.phone}">Phone</label>
+                        <input type="text" th:field="*{phone}" placeholder="+380...">
+                    </div>
+                    <div class="input-group">
+                        <label>Birth Date</label>
+                        <input type="date" th:field="*{birthDate}">
+                    </div>
+                </div>
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn-update">Update Staff Info</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

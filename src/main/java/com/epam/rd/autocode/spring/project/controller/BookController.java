@@ -1,10 +1,12 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.filterDTO.BookFilter;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import com.epam.rd.autocode.spring.project.model.Book;
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
+import com.epam.rd.autocode.spring.project.service.BookService;
 import com.epam.rd.autocode.spring.project.service.impl.BookServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -15,10 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookController {
 
-    private final BookServiceImpl bookService;
+    private final BookService bookService;
     private final MessageSource messageSource;
 
     @GetMapping
@@ -49,6 +48,14 @@ public class BookController {
         model.addAttribute("languages", Language.values());
 
         return "book-page";
+    }
+
+    @GetMapping("/{id}")
+    public String getBookDetails(@PathVariable Long id, Model model) {
+        BookFullResp book = bookService.getBookFull(id);
+        model.addAttribute("book", book);
+        model.addAttribute("bookId", id); // ID нужен для формы добавления в корзину
+        return "book-details";
     }
 
 }

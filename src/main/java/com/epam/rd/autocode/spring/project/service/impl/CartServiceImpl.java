@@ -48,25 +48,20 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public boolean addCartItem(Long bookId, Long userId , int delta) {
-        // 1. Находим книгу
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found"));
 
-        // 2. Получаем корзину пользователя
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new CartException("NotCurt found"));
 
-        // 3. Проверяем, есть ли уже такая книга в корзине
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getBook().getId().equals(bookId))
                 .findFirst();
 
         if (existingItem.isPresent()) {
-            // Если есть — увеличиваем количество
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + delta);
         } else {
-            // Если нет — создаем новый элемент
             CartItem newItem = new CartItem();
             newItem.setBook(book);
             newItem.setQuantity(1);
@@ -81,7 +76,6 @@ public class CartServiceImpl implements CartService {
     @Override
     @Transactional
     public void plusOneToCartItem(Long bookId, Long userId) {
-        System.out.println("Я тут бул плюс");
         addCartItem(bookId, userId, 1);
     }
 
@@ -96,7 +90,6 @@ public class CartServiceImpl implements CartService {
     public void removeCartItem(Long bookId, Long userID) {
         Cart cart = cartRepository.findByUserId(userID)
                 .orElseThrow(() -> new CartException("Cart not found"));
-        System.out.println("Я тут бул ремув");
         cart.getItems().removeIf(item -> item.getBook().getId().equals(bookId));
         cartRepository.save(cart);
     }

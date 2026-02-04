@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/cart-button.css}">
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
     <title th:text="#{nav.home}">Home</title>
     <style>
         body {
             margin: 0;
-            padding-top: 100px; /* Отступ сверху, чтобы фиксированные бары не закрывали контент */
+            padding-top: 100px;
             background-color: #f4f7f6;
             font-family: 'Segoe UI', sans-serif;
         }
@@ -104,13 +105,14 @@
         }
 
         @media (max-width: 850px) {
-            body { padding-top: 160px; } /* Увеличиваем отступ для мобилок, так как поиск съезжает ниже */
+            body { padding-top: 160px; }
         }
     </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/notifications :: toast}"></div>
+
 <div th:replace="~{fragments/navbar :: lang-button}"></div>
 <div th:replace="~{fragments/navbar :: nav-menu}"></div>
 <div th:replace="~{fragments/navbar :: search-bar('home')}"></div>
@@ -126,8 +128,9 @@
             <div class="book-content">
                 <img th:src="${book.photoUrl}" alt="Book Cover">
                 <div class="book-info">
-                    <h3 th:text="${book.name}">Назва книги</h3>
-
+                    <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none;">
+                        <h3 th:text="${book.name}" style="color: #1a2a6c; cursor: pointer;">Назва книги</h3>
+                    </a>
                     <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
                         <p th:text="${book.author}" style="margin: 0;">Автор</p>
                         <form th:action="@{/cart/add}" method="POST" style="display: inline;">
@@ -150,11 +153,19 @@
             <div class="book-content">
                 <img th:src="${book.photoUrl}" alt="Book Cover">
                 <div class="book-info">
-                    <h3 th:text="${book.name}">Назва книги</h3>
-                    <p th:text="${book.author}">Автор</p>
+                    <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none;">
+                        <h3 th:text="${book.name}" style="color: #1a2a6c; cursor: pointer;">Назва книги</h3>
+                    </a>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <p th:text="${book.author}" style="margin: 0;">Автор</p>
+                        <form th:action="@{/cart/add}" method="POST" style="display: inline;">
+                            <input type="hidden" name="bookId" th:value="${book.id}">
+                            <button type="submit" class="add-to-cart-btn">+</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="book-price" th:text="${book.price} + ' грн'"></div>
+            <div class="book-price" th:text="${book.price} + ' ₴'"></div>
         </div>
     </div>
 
@@ -167,11 +178,19 @@
             <div class="book-content">
                 <img th:src="${book.photoUrl}" alt="Book Cover">
                 <div class="book-info">
-                    <h3 th:text="${book.name}">Назва книги</h3>
-                    <p th:text="${book.author}">Автор</p>
+                    <a th:href="@{/books/{id}(id=${book.id})}" style="text-decoration: none;">
+                        <h3 th:text="${book.name}" style="color: #1a2a6c; cursor: pointer;">Назва книги</h3>
+                    </a>
+                    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+                        <p th:text="${book.author}" style="margin: 0;">Автор</p>
+                        <form th:action="@{/cart/add}" method="POST" style="display: inline;">
+                            <input type="hidden" name="bookId" th:value="${book.id}">
+                            <button type="submit" class="add-to-cart-btn">+</button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <div class="book-price" th:text="${book.price} + ' грн'"></div>
+            <div class="book-price" th:text="${book.price} + ' ₴'"></div>
         </div>
     </div>
 

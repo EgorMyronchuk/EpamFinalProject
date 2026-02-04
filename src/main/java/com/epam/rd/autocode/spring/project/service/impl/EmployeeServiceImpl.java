@@ -11,6 +11,7 @@ import com.epam.rd.autocode.spring.project.model.User;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.EmployeeService;
+import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,60 +23,16 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
 
-    private final EmployeeRepository employeeRepository;
-    private final EmployeeMapper employeeMapper;
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
-    public EmployeeRes addEmployee(EmployeeReq employee) {
-        Employee employeeEntity = employeeMapper.toEntity(employee);
-        employeeRepository.save(employeeEntity);
-        return employeeMapper.toDto(employeeEntity);
+    public void blockUserByEmail(String email){
+        userService.deleteUserByEmail(email);
     }
 
     @Override
-    public List<EmployeeRes> getAllEmployees() {
-        return employeeRepository.findAll().stream()
-                .map(employeeMapper::toDto)
-                .toList();
-    }
-
-    @Override
-    public EmployeeRes getEmployeeByEmail(String email) {
-        Optional<Employee> employee = employeeRepository.findByUserEmail(email);
-        if (employee.isPresent()) {
-            return employeeMapper.toDto(employee.get());
-        }
-        throw new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND);
-    }
-
-    @Transactional
-    public EmployeeRes updateEmployeeByEmail(String email, EmployeeReq req) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-
-        if (req.getEmail() != null && !req.getEmail().equals(user.getEmail())) {
-            if (userRepository.existsByEmail(req.getEmail())) {
-                throw new AlreadyExistException(ExceptionConstants.EMAIL_EXISTS);
-            }
-        }
-
-        Employee employee = user.getEmployeeProfile();
-
-        employeeMapper.updateUserFromDto(req, user);
-        employeeMapper.updateEmployeeFromDto(req, employee);
-
-        userRepository.save(user);
-
-        return employeeMapper.toDto(employee);
-    }
-
-    @Override
-    public void deleteEmployeeByEmail(String email) {
-        Employee client = employeeRepository.findByUserEmail(email)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
-
-        employeeRepository.delete(client);
+    public void unBlockUserByEmail(String email){
+        userService.restore(email);
     }
 
 }

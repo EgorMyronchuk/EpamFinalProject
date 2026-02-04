@@ -15,7 +15,10 @@ import com.epam.rd.autocode.spring.project.repo.ClientRepository;
 import com.epam.rd.autocode.spring.project.repo.EmployeeRepository;
 import com.epam.rd.autocode.spring.project.repo.OrderRepository;
 import com.epam.rd.autocode.spring.project.service.OrderService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -44,6 +47,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Page<OrderRes> getAllOrders(Pageable pageable){
+        return orderRepository.findAll(pageable)
+                .map(orderMapper::toDto);
+    }
+
+    @Override
     public List<OrderRes> getOrdersByEmployee(String employeeEmail) {
         Employee employee = employeeRepository.findByUserEmail(employeeEmail)
                 .orElseThrow(() -> new NotFoundException(ExceptionConstants.EMAIL_NOT_FOUND));
@@ -53,18 +62,19 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Override
+    @Transactional
     public Order createOrder(Long userId) {
-        // 1. Находим корзину
+
         Cart cart = cartRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Cart not found"));
 
         Client client = clientRepository.findByUserId(userId);
-        // 2. Создаем новый заказ
+
         Order order = new Order();
         order.setClient(client);
         order.setOrderDate(LocalDateTime.now());
 
-        // 3. Переносим товары из корзины в заказ
         List<BookItem> orderItems = cart.getItems().stream().map(cartItem -> {
             BookItem orderItem = new BookItem();
             orderItem.setBook(cartItem.getBook());
@@ -97,12 +107,22 @@ public class OrderServiceImpl implements OrderService {
         return savedOrder;
     }
 
+    @Override
     public void deleteOrder (Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderCustomException("Not Found Order by this Id"));
 
         order.setStatus(OrderStatus.CANCELED);
 
+        orderRepository.save(order);
+    }
+
+    @Override
+    public void changedStatus (Long orderId, OrderStatus newStatus) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderCustomException("Not Found Order by this Id"));
+
+        order.setStatus(newStatus);
         orderRepository.save(order);
     }
 }
