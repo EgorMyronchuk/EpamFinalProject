@@ -49,14 +49,16 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
 
                 .authorizeHttpRequests(request -> request
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll()
                         .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
+                        .requestMatchers("/auth/**", "/error").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger resources/*", "/v3/api-docs/**").permitAll()
 
-                        .requestMatchers("/home/**").hasAnyRole("USER", "EMPLOYEE", "ADMIN")
-                        .requestMatchers("/staff/**").hasAnyRole("EMPLOYEE", "ADMIN")
-                        .requestMatchers("/admin/**", "/endpoint").hasRole("ADMIN")
+                        .requestMatchers("/home/**").hasAnyRole("USER", "EMPLOYEE")
+                        .requestMatchers("/staff/**").hasAnyRole("EMPLOYEE")
+
 
                         .anyRequest().authenticated()
                 )
@@ -71,7 +73,14 @@ public class SecurityConfig {
                         .deleteCookies("jwt", "JSESSIONID")
                         .permitAll()
                 )
-
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.sendRedirect("/auth/login");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.sendRedirect("/error");
+                        })
+                )
                 .sessionManagement(manager ->
                         manager.sessionCreationPolicy(STATELESS)
                 )

@@ -32,7 +32,7 @@ public class DataInitializer {
                 employee.setEmail("employee@gmail.com");
                 employee.setPassword(passwordEncoder.encode("Employee"));
                 employee.setRole(Role.EMPLOYEE);
-                employee.setActive(true); // Обязательно, так как в UserPrincipal есть isEnabled()
+                employee.setActive(true);
 
                 Employee employeeProfile = new Employee(employee);
                 employee.setEmployeeProfile(employeeProfile);

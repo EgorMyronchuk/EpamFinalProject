@@ -54,7 +54,7 @@ public class BookController {
     public String getBookDetails(@PathVariable Long id, Model model) {
         BookFullResp book = bookService.getBookFull(id);
         model.addAttribute("book", book);
-        model.addAttribute("bookId", id); // ID нужен для формы добавления в корзину
+        model.addAttribute("bookId", id);
         return "book-details";
     }
 

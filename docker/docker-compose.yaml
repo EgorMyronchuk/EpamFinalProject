@@ -1,17 +1,13 @@
-version: "3.9"
+version: '3.3'
 
 services:
-  pg_db:
-    image: postgres
-    restart: always
-    environment:
-      - POSTGRES_DB=YOUR_NAME_DB
-      - POSTGRES_USER=YOUR_NAME_USER
-      - POSTGRES_PASSWORD=YOUR_PASSWORD
-    volumes:
-      - db:/var/lib/postgresql/book_store
+  postgres96:
+    image: postgres:9.6
+    restart: unless-stopped
+    container_name: pg_2
     ports:
-      - "5435:5432"
-
-volumes:
-  db:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}

@@ -13,6 +13,8 @@ public interface OrderMapper {
     Order toEntity(OrderReq dto);
 
     @Mapping(target = "clientEmail", source = "client.user.email")
+    @Mapping(target = "clientPhoneNumber", source = "client.phoneNumber")
+    @Mapping(target = "clientDeliveryAddress", source = "client.deliveryAddress")
     OrderRes toDto(Order entity);
 
 }

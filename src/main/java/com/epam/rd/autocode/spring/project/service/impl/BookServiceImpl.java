@@ -56,8 +56,6 @@ public class BookServiceImpl implements BookService {
 
         Book saved = bookRepository.save(book);
 
-        System.out.println("Date in Entity after mapping: " + book.getPublicationDate()); // ПРОВЕРКА
-
         return bookMapper.toDto(saved);
     }
 

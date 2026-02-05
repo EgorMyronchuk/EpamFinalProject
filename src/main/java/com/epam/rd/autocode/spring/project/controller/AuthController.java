@@ -20,13 +20,13 @@ public class AuthController {
 
     private final AuthenticationService authService;
 
-    @GetMapping("/register") // Добавили путь для ясности
+    @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("createUserReq", new CreateUserReq());
         return "register";
     }
 
-    @PostMapping("/register") // Путь должен совпадать с th:action в HTML
+    @PostMapping("/register")
     public String registration(@Valid @ModelAttribute("createUserReq") CreateUserReq createUserReq,
                                BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
@@ -59,7 +59,7 @@ public class AuthController {
         jwtCookie.setMaxAge(24 * 60 * 60);
         response.addCookie(jwtCookie);
 
-        return "redirect:/home"; // Редирект — это стандарт безопасности
+        return "redirect:/home";
     }
 }
 

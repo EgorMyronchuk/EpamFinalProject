@@ -66,9 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
                     } else if (!userDetails.isEnabled()) {
-                        
-                        response.sendRedirect("/auth/login");
-                        return;
+                        throw new UsernameNotFoundException("User is not enabled");
                     }
                 } catch (UsernameNotFoundException ex) {
                     if (request.getCookies() != null) {

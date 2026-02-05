@@ -15,7 +15,6 @@ class JwtServiceTest {
 
     private JwtService jwtService;
 
-    // Генерируем тестовый ключ (32 символа в Base64 для HS256)
     private final String secretKey = Base64.getEncoder().encodeToString(
             "my-super-secret-key-that-must-be-long-enough-32-chars".getBytes()
     );

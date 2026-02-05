@@ -38,7 +38,6 @@ class CustomUserDetailsServiceTest {
 
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-        // When
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
 
         assertNotNull(userDetails);

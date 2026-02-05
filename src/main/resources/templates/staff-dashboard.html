@@ -70,11 +70,24 @@
     <div class="dashboard-card">
         <h2>Orders Management</h2>
         <table>
-            <thead><tr><th>ID</th><th>Client</th><th>Price</th><th>Status</th><th>Action</th></tr></thead>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Client Info</th> <th>Price</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+            </thead>
             <tbody>
             <tr th:each="order : ${ordersPage.content}">
                 <td th:text="${order.id}"></td>
-                <td th:text="${order.clientEmail}" style="font-size: 13px; color: #555;"></td>
+                <td>
+                    <div th:text="${order.clientEmail}" style="font-weight: bold; font-size: 13px; color: #1a2a6c;"></div>
+
+                    <div th:text="${order.clientPhoneNumber}" style="font-size: 12px; color: #555;"></div>
+
+                    <div th:text="${order.clientDeliveryAddress}" style="font-size: 11px; color: #888; font-style: italic; max-width: 200px;"></div>
+                </td>
                 <td th:text="${order.price} + ' ₴'"></td>
                 <td><span th:class="'order-' + ${order.status}" th:text="${order.status}"></span></td>
                 <td>

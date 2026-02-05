@@ -75,7 +75,6 @@ public class AuthenticationService {
         );
 
         UserPrincipal principal = (UserPrincipal) authentication.getPrincipal();
-        System.out.println("я тут был 1");
         String jwt = jwtService.generateToken(principal);
         return new JwtAuthenticationResponse(jwt);
     }

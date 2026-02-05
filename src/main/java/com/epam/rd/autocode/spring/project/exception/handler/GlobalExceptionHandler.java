@@ -2,9 +2,8 @@ package com.epam.rd.autocode.spring.project.exception.handler;
 
 import com.epam.rd.autocode.spring.project.dto.execptionDTO.ErrorResp;
 import com.epam.rd.autocode.spring.project.dto.request.auth.SignInReq;
-import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
-import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.exception.UserAccountDisabledException;
+import com.epam.rd.autocode.spring.project.exception.*;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Arrays;
 
@@ -21,13 +21,27 @@ import java.util.Arrays;
 @Slf4j
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler({
+            AlreadyExistException.class,
+            BookException.class,
+            CartException.class,
+            NotEnoughMoneyException.class,
+            OrderCustomException.class
+    })
+    public String handleBusinessExceptions(RuntimeException ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        log.error("Business error: {}", ex.getMessage());
+
+        redirectAttributes.addFlashAttribute("loginError", ex.getMessage());
+
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/home");
+    }
+
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<ErrorResp> handleNotFoundException(NotFoundException ex) {
-        log.debug("Route not found: {}", ex.getMessage());
-        System.out.println(Arrays.toString(ex.getStackTrace()));
-        System.out.println(ex.getMessage());
-        return new ResponseEntity<>(new ErrorResp(ExceptionConstants.NOT_FOUND), HttpStatus.NOT_FOUND);
+    public String handleNotFound(NotFoundException ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
+        redirectAttributes.addFlashAttribute("loginError", "Ресурс не знайдено: " + ex.getMessage());
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/home");
     }
 
     @ExceptionHandler(BadCredentialsException.class)

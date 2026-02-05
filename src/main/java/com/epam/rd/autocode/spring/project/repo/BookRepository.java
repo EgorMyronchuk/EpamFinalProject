@@ -19,7 +19,6 @@ public interface BookRepository extends JpaRepository<Book, Long>, JpaSpecificat
 
     Page<Book> findAll(Pageable pageable);
 
-
     Page<Book> findAllByOrderBySoldAmountDesc(Pageable pageable);
 
     Page<Book> findAllByAgeGroup(AgeGroup ageGroup, Pageable pageable);

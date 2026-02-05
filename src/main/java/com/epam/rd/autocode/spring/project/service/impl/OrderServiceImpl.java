@@ -48,8 +48,11 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderRes> getAllOrders(Pageable pageable){
-        return orderRepository.findAll(pageable)
+        Page<OrderRes> orderRes = orderRepository.findAll(pageable)
                 .map(orderMapper::toDto);
+
+        orderRes.getContent().forEach(System.out::println);
+        return orderRes;
     }
 
     @Override

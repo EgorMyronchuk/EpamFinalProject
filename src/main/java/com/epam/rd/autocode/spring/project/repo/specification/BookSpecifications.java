@@ -12,19 +12,16 @@ import java.util.List;
 @Component
 public class BookSpecifications {
 
-    // Поиск по названию
     public Specification<Book> hasName(String name) {
         return (root, query, cb) ->
                 name == null ? null : cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%");
     }
 
-    // Поиск по автору
     public Specification<Book> hasAuthor(String author) {
         return (root, query, cb) ->
                 author == null ? null : cb.like(cb.lower(root.get("author")), "%" + author.toLowerCase() + "%");
     }
 
-    // Фильтр по списку жанров (через IN)
     public Specification<Book> hasGenres(List<String> genres) {
         return (root, query, cb) -> {
             if (genres == null || genres.isEmpty()) return null;
@@ -32,7 +29,6 @@ public class BookSpecifications {
         };
     }
 
-    // Фильтр по возрастной группе
     public Specification<Book> hasAgeGroups(List<AgeGroup> ageGroups) {
         return (root, query, cb) -> {
             if (ageGroups == null || ageGroups.isEmpty()) return null;
@@ -40,7 +36,6 @@ public class BookSpecifications {
         };
     }
 
-    // Фильтр по языку
     public Specification<Book> hasLanguages(List<Language> languages) {
         return (root, query, cb) -> {
             if (languages == null || languages.isEmpty()) return null;
@@ -48,7 +43,6 @@ public class BookSpecifications {
         };
     }
 
-    // Фильтр по диапазону цен
     public Specification<Book> priceBetween(BigDecimal min, BigDecimal max) {
         return (root, query, cb) -> {
             if (min == null && max == null) return null;

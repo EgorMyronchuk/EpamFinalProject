@@ -26,16 +26,13 @@ public class OrderController {
 
     @GetMapping
     public String showCart(Model model, Principal principal) {
-        // 1. Получаем текущего юзера
         Long userId = userService.getUserIdByEmail(principal.getName());
 
-        // 2. Получаем DTO корзины через твой метод (с items и totalPrice)
         CartRes cartRes = cartService.getCart(userId);
 
-        // 3. Кладем в модель под именем "cart" (как в HTML)
         model.addAttribute("cart", cartRes);
 
-        return "orders"; // имя файла orders.html
+        return "orders";
     }
 
     @PostMapping("/create")
@@ -44,7 +41,7 @@ public class OrderController {
         try {
             orderService.createOrder(userId);
             redirectAttributes.addFlashAttribute("successMessage", "Замовлення успішно оформлено!");
-            return "redirect:/home"; // Или на страницу истории заказов
+            return "redirect:/home";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("loginError", e.getMessage());
             return "redirect:/orders";

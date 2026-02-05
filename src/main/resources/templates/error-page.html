@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Oops! Error</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Segoe UI', sans-serif;
+            color: white;
+            text-align: center;
+        }
+        .error-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        h1 { font-size: 100px; margin: 0; text-shadow: 2px 4px 10px rgba(0,0,0,0.3); }
+        h2 { margin: 10px 0; font-weight: 300; }
+        p { margin-bottom: 30px; opacity: 0.8; }
+        .btn-home {
+            text-decoration: none;
+            color: #1a2a6c;
+            background: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-home:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+<div class="error-container">
+    <h1 th:text="${statusCode}">404</h1>
+    <h2 th:text="${message}">Упс! Щось пішло не так</h2>
+    <p>Здається, ви потрапили в невідому частину нашої книгарні.</p>
+    <br>
+    <a href="/home" class="btn-home">Повернутися до книг</a>
+</div>
+</body>
+</html>
