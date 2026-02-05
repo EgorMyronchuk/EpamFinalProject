@@ -7,6 +7,7 @@ import com.epam.rd.autocode.spring.project.model.User;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,20 +18,38 @@ import java.math.BigDecimal;
 @Configuration
 public class DataInitializer {
 
+    @Value("${ADMIN_EMAIL}")
+    private String adminEmail;
+
+    @Value("${ADMIN_PASS}")
+    private String adminPass;
+
+    @Value("${EMPLOYEE_EMAIL}")
+    private String employeeEmail;
+
+    @Value("${EMPLOYEE_PASS}")
+    private String employeePass;
+
+    @Value("${USER_EMAIL}")
+    private String userEmail;
+
+    @Value("${USER_PASS}")
+    private String userPass;
+
     @Bean
     public CommandLineRunner initUsers(UserRepository userRepository, CartRepository cartRepository, PasswordEncoder passwordEncoder) {
         return args -> {
             if (userRepository.findByRole(Role.ADMIN).isEmpty()) {
                 User admin = new User();
-                admin.setEmail("adminadmin@gmail.com");
-                admin.setPassword(passwordEncoder.encode("Admin_pass"));
+                admin.setEmail(adminEmail);
+                admin.setPassword(passwordEncoder.encode(adminPass));
                 admin.setRole(Role.ADMIN);
                 userRepository.save(admin);
             }
             if (userRepository.findByEmail("employee@gmail.com").isEmpty()) {
                 User employee = new User();
-                employee.setEmail("employee@gmail.com");
-                employee.setPassword(passwordEncoder.encode("Employee"));
+                employee.setEmail(employeeEmail);
+                employee.setPassword(passwordEncoder.encode(employeePass));
                 employee.setRole(Role.EMPLOYEE);
                 employee.setActive(true);
 
@@ -44,11 +63,10 @@ public class DataInitializer {
             }
             if (userRepository.findByEmail("egormyronchuk@gmail.com").isEmpty()) {
                 User user = new User();
-                user.setEmail("egormyronchuk@gmail.com");
-                user.setPassword(passwordEncoder.encode("Egor2004"));
+                user.setEmail(userEmail);
+                user.setPassword(passwordEncoder.encode(userPass));
                 user.setName("Egor");
                 user.setRole(Role.USER);
-                //////// ВИТЯГНУТИ З ИНВР СЮДИ ,ЩОБ БЕЗ КРЕД БУЛО ТУТ хочаб паролі
                 Client clientProfile = new Client(user);
                 clientProfile.setBalance(new BigDecimal("100.00"));
                 user.setClientProfile(clientProfile);
