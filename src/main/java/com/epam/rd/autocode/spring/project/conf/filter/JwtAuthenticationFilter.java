@@ -56,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(username)) {
                 try {
                     UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-                    if (jwtService.isTokenValid(jwt, userDetails)) {
+                    if (jwtService.isTokenValid(jwt, userDetails) && userDetails.isEnabled()) {
                         UsernamePasswordAuthenticationToken authToken =
                                 new UsernamePasswordAuthenticationToken(
                                         userDetails,
@@ -65,6 +65,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                 );
                         authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                         SecurityContextHolder.getContext().setAuthentication(authToken);
+                    } else if (!userDetails.isEnabled()) {
+                        
+                        response.sendRedirect("/auth/login");
+                        return;
                     }
                 } catch (UsernameNotFoundException ex) {
                     if (request.getCookies() != null) {
