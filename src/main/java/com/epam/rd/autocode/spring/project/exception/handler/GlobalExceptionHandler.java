@@ -25,8 +25,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({
             AlreadyExistException.class,
+            BookException.class,
+            CartException.class,
             NotEnoughMoneyException.class,
-            OrderCustomException.class
+            OrderCustomException.class,
+            UserAccountDisabledException.class
     })
     public String handleBusinessExceptions(RuntimeException ex, HttpServletRequest request) {
         System.out.println("1 - Handler Triggered for Stateless Redirect");
@@ -38,12 +41,8 @@ public class GlobalExceptionHandler {
             return "redirect:/home?loginError=" + errorMessage;
         }
 
-        // Проверяем, есть ли уже в URL параметры (знак вопроса)
-        // Чтобы не получилось ...?page=1?loginError=...
         String separator = referer.contains("?") ? "&" : "?";
 
-        // Если ошибка уже была в URL, она может задублироваться.
-        // В идеале её стоит вырезать через regex, но для начала хватит и этого:
         return "redirect:" + referer + separator + "loginError=" + errorMessage;
     }
 
@@ -66,7 +65,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadCredentialsException.class)
     public String handleBadCredentials(BadCredentialsException ex, Model model) {
         model.addAttribute("signInReq", new SignInReq());
-        System.out.println("3");
         model.addAttribute("loginError", "Невірна пошта або пароль");
         return "login";
     }
@@ -74,7 +72,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DisabledException.class)
     public String handleBaUserAccountDisabledException(DisabledException ex, Model model) {
         model.addAttribute("signInReq", new SignInReq());
-        System.out.println("4");
         model.addAttribute("loginError", "Аккаунт заблоковано або він був видалений");
         return "login";
     }

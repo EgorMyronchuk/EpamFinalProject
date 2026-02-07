@@ -1,13 +1,16 @@
 package com.epam.rd.autocode.spring.project.exception;
 
 public class ExceptionConstants {
-    public static String NOT_FOUND = "Not found";
-    public static String EMAIL_NOT_FOUND = "No content by this email";
-    public static String BOOK_NOT_FOUND = "Books not found for your search criteria";;
-    public static String UNAUTHORIZED = "Unauthorized";
-    public static String INTERNAL_SERVER_ERROR = "Internal server error";
-    public static String EMAIL_EXISTS = "Email already exists";
-    public static String NAME_EXISTS = "Name already exists";
-    public static String INVALID_PASSWORD = "Invalid password";
-    public static String INVALID_REQUEST = "Invalid request";
+    public static final String NOT_FOUND = "error.not_found";
+    public static final String EMAIL_NOT_FOUND = "error.email_not_found";
+    public static final String CART_NOT_FOUND = "error.cart_not_found";
+    public static final String ORDER_NOT_FOUND = "error.order_not_found";
+    public static final String BOOK_NOT_FOUND = "error.book_not_found";
+    public static final String UNAUTHORIZED = "error.unauthorized";
+    public static final String INTERNAL_SERVER_ERROR = "error.internal_server_error";
+    public static final String EMAIL_EXISTS = "error.email_exists";
+    public static final String NAME_EXISTS = "error.name_exists";
+    public static final String INVALID_PASSWORD = "error.invalid_password";
+    public static final String INVALID_REQUEST = "error.invalid_request";
+    public static final String NOT_ENOUGH_MONEY = "error.not_enough_money";
 }

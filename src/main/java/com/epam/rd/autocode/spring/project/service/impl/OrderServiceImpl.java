@@ -4,10 +4,7 @@ import com.epam.rd.autocode.spring.project.dto.OrderDTO;
 import com.epam.rd.autocode.spring.project.dto.mapper.OrderMapper;
 import com.epam.rd.autocode.spring.project.dto.request.order.OrderReq;
 import com.epam.rd.autocode.spring.project.dto.response.order.OrderRes;
-import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
-import com.epam.rd.autocode.spring.project.exception.NotEnoughMoneyException;
-import com.epam.rd.autocode.spring.project.exception.NotFoundException;
-import com.epam.rd.autocode.spring.project.exception.OrderCustomException;
+import com.epam.rd.autocode.spring.project.exception.*;
 import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
@@ -70,7 +67,7 @@ public class OrderServiceImpl implements OrderService {
     public Order createOrder(Long userId) {
 
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Cart not found"));
+                .orElseThrow(() -> new CartException(ExceptionConstants.CART_NOT_FOUND));
 
         Client client = clientRepository.findByUserId(userId);
 
@@ -94,7 +91,7 @@ public class OrderServiceImpl implements OrderService {
         order.setPrice(totalPrice);
 
         if (client.getBalance().compareTo(totalPrice) < 0) {
-            throw new NotEnoughMoneyException("You don`t have enough money123");
+            throw new NotEnoughMoneyException(ExceptionConstants.NOT_ENOUGH_MONEY);
         }
 
         order.setStatus(OrderStatus.PENDING);
@@ -113,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void deleteOrder (Long orderId) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderCustomException("Not Found Order by this Id"));
+                .orElseThrow(() -> new OrderCustomException(ExceptionConstants.ORDER_NOT_FOUND));
 
         order.setStatus(OrderStatus.CANCELED);
 
@@ -123,7 +120,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void changedStatus (Long orderId, OrderStatus newStatus) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderCustomException("Not Found Order by this Id"));
+                .orElseThrow(() -> new OrderCustomException(ExceptionConstants.ORDER_NOT_FOUND));
 
         order.setStatus(newStatus);
         orderRepository.save(order);
