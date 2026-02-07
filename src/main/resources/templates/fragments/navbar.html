@@ -96,7 +96,6 @@
             box-shadow: 0 8px 15px rgba(0,0,0,0.3);
         }
 
-        /* Скрываем форму, чтобы не портила верстку */
         .logout-form { margin: 0; padding: 0; }
 
         @media (max-width: 850px) {
@@ -119,13 +118,14 @@
 
         <form th:action="@{/logout}" method="post" class="logout-form" sec:authorize="isAuthenticated()">
             <button type="submit" class="btn-left logout-btn">
-                🚪 Logout
+                <span th:text="#{auth.logout}">Logout</span>
             </button>
         </form>
 
         <a th:href="@{/staff}"
            class="btn-left staff-nav-btn"
-           sec:authorize="hasAnyRole('ROLE_EMPLOYEE', 'ROLE_ADMIN')">
+           sec:authorize="hasAnyRole('ROLE_EMPLOYEE', 'ROLE_ADMIN')"
+           th:text="'🛠️ ' + #{nav.staff_panel}">
             🛠️ Staff Panel
         </a>
     </div>
@@ -428,7 +428,8 @@
     </style>
 
     <nav class="main-nav">
-        <div th:replace="~{::cart-button}"></div>
+        <div sec:authorize="hasRole('ROLE_USER') and !hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')"
+             th:replace="~{::cart-button}"></div>
 
         <div th:if="${#httpServletRequest.getServletPath() != '/profile'}"
              th:replace="~{::user-balance}"></div>

@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add New Book</title>
+    <title th:text="#{book.add.title}">Add New Book</title>
     <style>
         body { margin: 0; padding-top: 100px; background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
         .form-container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 50px; }
@@ -18,34 +18,35 @@
 </head>
 <body>
 
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
 <div th:replace="~{fragments/navbar :: nav-menu}"></div>
 
 <div class="form-container">
-    <h2 style="color: #1a2a6c; margin-top: 0;">Add New Book</h2>
+    <h2 style="color: #1a2a6c; margin-top: 0;" th:text="#{book.add.title}">Add New Book</h2>
 
     <form th:action="@{/staff/books/add}" th:object="${book}" method="POST">
 
         <div th:if="${#fields.hasAnyErrors()}" class="error-msg-container">
-            <strong>Please fix the following errors:</strong>
+            <strong th:text="#{book.form.error_header}">Please fix the following errors:</strong>
             <ul>
                 <li th:each="err : ${#fields.allErrors()}" th:text="${err}"></li>
             </ul>
         </div>
 
         <div class="form-group">
-            <label>Book Name</label>
-            <input type="text" th:field="*{name}" placeholder="Enter title" required>
+            <label th:text="#{book.form.name}">Book Name</label>
+            <input type="text" th:field="*{name}" th:placeholder="#{book.form.placeholder.name}" required>
             <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
         </div>
 
         <div style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
-                <label>Author</label>
+                <label th:text="#{book.form.author}">Author</label>
                 <input type="text" th:field="*{author}" required>
                 <div class="field-error" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Genre</label>
+                <label th:text="#{book.form.genre}">Genre</label>
                 <input type="text" th:field="*{genre}" required>
                 <div class="field-error" th:if="${#fields.hasErrors('genre')}" th:errors="*{genre}"></div>
             </div>
@@ -53,50 +54,56 @@
 
         <div style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
-                <label>Price (₴)</label>
+                <label th:text="#{book.form.price}">Price (₴)</label>
                 <input type="number" step="0.01" th:field="*{price}" required>
                 <div class="field-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}"></div>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Pages</label>
+                <label th:text="#{book.form.pages}">Pages</label>
                 <input type="number" th:field="*{pages}" required>
                 <div class="field-error" th:if="${#fields.hasErrors('pages')}" th:errors="*{pages}"></div>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Photo URL</label>
+            <label th:text="#{book.form.photo}">Photo URL</label>
             <input type="text" th:field="*{photoUrl}">
         </div>
 
         <div style="display: flex; gap: 15px;">
             <div class="form-group" style="flex: 1;">
-                <label>Age Group</label>
+                <label th:text="#{book.form.age_group}">Age Group</label>
                 <select th:field="*{ageGroup}">
-                    <option th:each="group : ${ageGroups}" th:value="${group}" th:text="${group}"></option>
+                    <option th:each="group : ${ageGroups}"
+                            th:value="${group}"
+                            th:text="#{${'age.' + group.toString().toLowerCase()}}"></option>
                 </select>
             </div>
             <div class="form-group" style="flex: 1;">
-                <label>Language</label>
+                <label th:text="#{book.form.language}">Language</label>
                 <select th:field="*{language}">
-                    <option th:each="lang : ${languages}" th:value="${lang}" th:text="${lang}"></option>
+                    <option th:each="lang : ${languages}"
+                            th:value="${lang}"
+                            th:text="#{${'language.' + lang.toString().toLowerCase()}}"></option>
                 </select>
             </div>
         </div>
 
         <div class="form-group">
-            <label>Publication Date</label>
+            <label th:text="#{book.form.date}">Publication Date</label>
             <input type="date" th:field="*{publicationDate}" required>
             <div class="field-error" th:if="${#fields.hasErrors('publicationDate')}" th:errors="*{publicationDate}"></div>
         </div>
 
         <div class="form-group">
-            <label>Description</label>
-            <textarea th:field="*{description}" rows="4" placeholder="Brief summary of the book..."></textarea>
+            <label th:text="#{book.form.description}">Description</label>
+            <textarea th:field="*{description}" rows="4" th:placeholder="#{book.form.placeholder.description}"></textarea>
         </div>
 
-        <button type="submit" class="btn-save">Save Book</button>
-        <a th:href="@{/staff}" style="display: block; text-align: center; margin-top: 15px; color: #777; text-decoration: none; font-size: 14px;">Cancel and go back</a>
+        <button type="submit" class="btn-save" th:text="#{book.form.save}">Save Book</button>
+        <a th:href="@{/staff}"
+           style="display: block; text-align: center; margin-top: 15px; color: #777; text-decoration: none; font-size: 14px;"
+           th:text="#{book.form.cancel}">Cancel and go back</a>
     </form>
 </div>
 

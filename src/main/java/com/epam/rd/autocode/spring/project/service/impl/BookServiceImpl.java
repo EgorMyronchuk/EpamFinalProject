@@ -35,6 +35,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookRes addBook(BookReq book) {
         Book entity = bookMapper.toEntity(book);
+        entity.setSoldAmount(0);
         Book saved = bookRepository.save(entity);
         return bookMapper.toDto(saved);
     }

@@ -76,7 +76,7 @@ public class StaffController {
         model.addAttribute("book", new BookReq());
         model.addAttribute("ageGroups", AgeGroup.values());
         model.addAttribute("languages", Language.values());
-        return "add-book"; // Название HTML файла
+        return "add-book";
     }
 
     @PostMapping("/books/add")
