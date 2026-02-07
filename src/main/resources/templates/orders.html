@@ -87,9 +87,8 @@
         .empty-state { text-align: center; padding: 50px; color: #777; }
     </style>
 </head>
-<body>
+<body>     <div th:replace="~{fragments/notifications :: toast}"></div>
 
-<div th:replace="~{fragments/notifications :: toast}"></div>
 <div th:replace="~{fragments/navbar :: lang-button}"></div>
 <div th:replace="~{fragments/navbar :: nav-menu}"></div>
 

@@ -93,15 +93,15 @@ public class OrderServiceImpl implements OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setPrice(totalPrice);
 
+        if (client.getBalance().compareTo(totalPrice) < 0) {
+            throw new NotEnoughMoneyException("You don`t have enough money123");
+        }
+
         order.setStatus(OrderStatus.PENDING);
         Order savedOrder = orderRepository.save(order);
 
         cart.getItems().clear();
         cartRepository.save(cart);
-
-        if (client.getBalance().compareTo(totalPrice) < 0) {
-            throw new NotEnoughMoneyException("You don`t have enough money");
-        }
 
         BigDecimal balanceAfterDeposit = client.getBalance().subtract(totalPrice);
         client.setBalance(balanceAfterDeposit);
