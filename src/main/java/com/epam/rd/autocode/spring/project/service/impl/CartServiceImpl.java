@@ -2,7 +2,9 @@ package com.epam.rd.autocode.spring.project.service.impl;
 
 import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
 import com.epam.rd.autocode.spring.project.dto.response.cart.CartRes;
+import com.epam.rd.autocode.spring.project.exception.BookException;
 import com.epam.rd.autocode.spring.project.exception.CartException;
+import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
@@ -27,7 +29,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public CartRes getCart(Long userId) {
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new CartException("Cart not found"));
+                .orElseThrow(() -> new CartException(ExceptionConstants.CART_NOT_FOUND));
 
         BigDecimal totalPrice = cart.getItems().stream()
                 .map(item -> item.getBook().getPrice().multiply(new BigDecimal(item.getQuantity())))
@@ -49,10 +51,10 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public boolean addCartItem(Long bookId, Long userId , int delta) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
         Cart cart = cartRepository.findByUserId(userId)
-                .orElseThrow(() -> new CartException("NotCurt found"));
+                .orElseThrow(() -> new CartException(ExceptionConstants.CART_NOT_FOUND));
 
         Optional<CartItem> existingItem = cart.getItems().stream()
                 .filter(item -> item.getBook().getId().equals(bookId))
@@ -89,7 +91,7 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void removeCartItem(Long bookId, Long userID) {
         Cart cart = cartRepository.findByUserId(userID)
-                .orElseThrow(() -> new CartException("Cart not found"));
+                .orElseThrow(() -> new CartException(ExceptionConstants.CART_NOT_FOUND));
         cart.getItems().removeIf(item -> item.getBook().getId().equals(bookId));
         cartRepository.save(cart);
     }

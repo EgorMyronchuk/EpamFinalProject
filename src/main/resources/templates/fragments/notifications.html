@@ -2,11 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div th:fragment="toast" class="toast-container">
-    <div th:if="${loginError}" class="toast error" id="notification">
-        <span th:text="${loginError}">Error message</span>
+    <div th:if="${param.loginError ?: loginError}" class="toast error" id="notification">
+        <span th:text="${param.loginError != null ? param.loginError[0] : loginError}">Error message</span>
     </div>
-    <div th:if="${successMessage}" class="toast success" id="notification-success">
-        <span th:text="${successMessage}">Success message</span>
+
+    <div th:if="${param.successMessage ?: successMessage}" class="toast success" id="notification-success">
+        <span th:text="${param.successMessage != null ? param.successMessage[0] : successMessage}">Success message</span>
     </div>
 
     <script th:src="@{/js/notifications.js}"></script>

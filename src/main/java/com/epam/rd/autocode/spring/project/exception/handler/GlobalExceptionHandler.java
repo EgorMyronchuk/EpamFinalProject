@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 @ControllerAdvice
@@ -26,28 +28,43 @@ public class GlobalExceptionHandler {
             BookException.class,
             CartException.class,
             NotEnoughMoneyException.class,
-            OrderCustomException.class
+            OrderCustomException.class,
+            UserAccountDisabledException.class
     })
-    public String handleBusinessExceptions(RuntimeException ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-        log.error("Business error: {}", ex.getMessage());
+    public String handleBusinessExceptions(RuntimeException ex, HttpServletRequest request) {
+        System.out.println("1 - Handler Triggered for Stateless Redirect");
 
-        redirectAttributes.addFlashAttribute("loginError", ex.getMessage());
-
+        String errorMessage = URLEncoder.encode(ex.getMessage(), StandardCharsets.UTF_8);
         String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null ? referer : "/home");
+
+        if (referer == null || referer.isEmpty()) {
+            return "redirect:/home?loginError=" + errorMessage;
+        }
+
+        String separator = referer.contains("?") ? "&" : "?";
+
+        return "redirect:" + referer + separator + "loginError=" + errorMessage;
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public String handleNotFound(NotFoundException ex, HttpServletRequest request, RedirectAttributes redirectAttributes) {
-        redirectAttributes.addFlashAttribute("loginError", "Ресурс не знайдено: " + ex.getMessage());
+    public String handleNotFound(NotFoundException ex, HttpServletRequest request) {
+        System.out.println("2 - NotFound Handler Triggered");
+
+        String message = "Ресурс не знайдено: " + ex.getMessage();
+        String encodedMessage = URLEncoder.encode(message, StandardCharsets.UTF_8);
+
         String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null ? referer : "/home");
+
+        String target = (referer != null && !referer.isEmpty()) ? referer : "/home";
+
+        String separator = target.contains("?") ? "&" : "?";
+
+        return "redirect:" + target + separator + "loginError=" + encodedMessage;
     }
 
     @ExceptionHandler(BadCredentialsException.class)
     public String handleBadCredentials(BadCredentialsException ex, Model model) {
         model.addAttribute("signInReq", new SignInReq());
-
         model.addAttribute("loginError", "Невірна пошта або пароль");
         return "login";
     }
@@ -55,7 +72,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DisabledException.class)
     public String handleBaUserAccountDisabledException(DisabledException ex, Model model) {
         model.addAttribute("signInReq", new SignInReq());
-
         model.addAttribute("loginError", "Аккаунт заблоковано або він був видалений");
         return "login";
     }
