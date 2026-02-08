@@ -17,10 +17,21 @@
         .input-group { display: flex; flex-direction: column; margin-bottom: 15px; }
         .input-group label { font-weight: 700; margin-bottom: 8px; color: #444; font-size: 14px; }
         .input-group input { padding: 12px; border: 2px solid #eee; border-radius: 10px; }
-        .input-group input[readonly] { background: #f9f9f9; }
+        .input-group input[readonly] { background: #f9f9f9; cursor: not-allowed; }
         .btn-update { background: #2c5364; color: white; border: none; padding: 12px 30px; border-radius: 50px; font-weight: 700; cursor: pointer; transition: 0.3s; width: 100%; }
         .btn-update:hover { background: #203a43; transform: translateY(-2px); }
         .staff-badge { background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 50px; font-size: 12px; text-transform: uppercase; }
+
+        /* Стили для вывода ошибок валидации */
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 5px;
+            font-weight: 600;
+        }
+        .input-error {
+            border-color: #e74c3c !important;
+        }
     </style>
 </head>
 <body>
@@ -37,24 +48,33 @@
         </div>
 
         <div class="profile-body">
-            <form th:action="@{/profile/update-staff}" th:object="${profile}" method="post">
+            <form th:action="@{/profile/update-staff}" th:object="${profile}" method="post" novalidate>
                 <div class="form-grid">
+
                     <div class="input-group">
                         <label th:text="#{auth.email}">Email</label>
-                        <input type="email" th:value="${profile.email}" readonly>
+                        <input type="email" th:field="*{email}" readonly>
+                        <div class="error-message" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                     </div>
+
                     <div class="input-group">
                         <label th:text="#{auth.name}">Name</label>
-                        <input type="text" th:field="*{name}" required>
+                        <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'input-error'">
+                        <div class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
                     </div>
+
                     <div class="input-group">
                         <label th:text="#{client.phone}">Phone</label>
-                        <input type="text" th:field="*{phone}" placeholder="+380...">
+                        <input type="text" th:field="*{phone}" placeholder="+380..." th:classappend="${#fields.hasErrors('phone')} ? 'input-error'">
+                        <div class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
                     </div>
+
                     <div class="input-group">
                         <label>Birth Date</label>
-                        <input type="date" th:field="*{birthDate}">
+                        <input type="date" th:field="*{birthDate}" th:classappend="${#fields.hasErrors('birthDate')} ? 'input-error'">
+                        <div class="error-message" th:if="${#fields.hasErrors('birthDate')}" th:errors="*{birthDate}"></div>
                     </div>
+
                 </div>
                 <div style="margin-top: 30px;">
                     <button type="submit" class="btn-update">Update Staff Info</button>

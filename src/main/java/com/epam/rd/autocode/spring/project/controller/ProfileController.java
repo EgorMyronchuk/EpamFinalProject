@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Controller;
@@ -66,10 +67,21 @@ public class ProfileController {
         return "profile";
     }
 
+    @PreAuthorize("hasAnyRole('EMPLOYEE', 'ADMIN')")
     @PostMapping("/update-staff")
-    public String updateStaffProfile(@ModelAttribute("profile") EmployeeBusModelReq updateDto,
-                                     Authentication authentication,
-                                     Locale locale) {
+    public String updateStaffProfile(
+            @Valid @ModelAttribute("profile") EmployeeBusModelReq updateDto,
+            BindingResult bindingResult,
+            Authentication authentication,
+            Locale locale,
+            Model model) {
+
+        if (bindingResult.hasErrors()) {
+            String role = authentication.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+            model.addAttribute("userRole", role);
+            return "profile-staff";
+        }
+
         profileService.updateEmployeeByEmail(authentication.getName(), updateDto);
 
         String msg = messageSource.getMessage("success.profile_updated", null, locale);
@@ -98,6 +110,11 @@ public class ProfileController {
 
     @GetMapping("/update")
     public String handleGetUpdate() {
+        return "redirect:/profile";
+    }
+
+    @GetMapping("/update-staff")
+    public String handleGetUpdateStaff() {
         return "redirect:/profile";
     }
 

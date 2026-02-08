@@ -294,7 +294,7 @@
 
     <div class="balance-container" th:if="${userBalance != null}" onclick="openDepositModal()">
         <span th:text="${userBalance}">0.00</span>
-        <span class="currency-symbol" th:text="${#locale.language == 'en' ? 'USD' : 'UAH'}">UAH</span>
+        <span class="currency-symbol" th:text="${#locale.language == 'en' ? 'UAH' : 'UAH'}">UAH</span>
     </div>
 
     <div id="depositModal" class="modal-overlay" onclick="closeDepositModal(event)">
