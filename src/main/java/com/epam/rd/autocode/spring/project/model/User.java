@@ -22,8 +22,13 @@ public class User {
     private Long id;
 
     private String email;
+
+    @Column(nullable = true)
     private String password;
+
     private String name;
+
+    private String provider;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -1,8 +1,13 @@
 package com.epam.rd.autocode.spring.project.conf.filter;
 
+import com.epam.rd.autocode.spring.project.model.RefreshToken;
+import com.epam.rd.autocode.spring.project.model.UserPrincipal;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
@@ -27,6 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     public static final String HEADER_NAME = "Authorization";
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
     protected void doFilterInternal(
@@ -51,7 +58,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            String username = jwtService.extractEmailName(jwt);
+            String username = null;
+
+            try {
+                username = jwtService.extractEmailName(jwt);
+            } catch (Exception e) {
+                handleTokenRefresh(request, response);
+                response.sendRedirect(request.getRequestURI());
+                return;
+            }
 
             if (StringUtils.hasText(username)) {
                 try {
@@ -86,6 +101,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
         filterChain.doFilter(request, response);
+    }
+
+    private void handleTokenRefresh(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh_token".equals(cookie.getName())) {
+                    String refreshTokenString = cookie.getValue();
+
+                    refreshTokenRepository.findByToken(refreshTokenString)
+                            .map(refreshTokenService::verifyExpiration)
+                            .map(RefreshToken::getUser)
+                            .ifPresent(user -> {
+                                String newAccessToken = jwtService.generateToken(new UserPrincipal(user));
+                                Cookie accessCookie = new Cookie("jwt", newAccessToken);
+                                accessCookie.setHttpOnly(true);
+                                accessCookie.setPath("/");
+                                accessCookie.setMaxAge(15 * 60);
+                                response.addCookie(accessCookie);
+                            });
+                }
+            }
+        }
     }
 }
 

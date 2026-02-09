@@ -30,7 +30,8 @@ public class GlobalExceptionHandler {
             CartException.class,
             NotEnoughMoneyException.class,
             OrderCustomException.class,
-            UserAccountDisabledException.class
+            UserAccountDisabledException.class,
+            TokenException.class
     })
     public String handleBusinessExceptions(RuntimeException ex, HttpServletRequest request, Locale locale) {
 

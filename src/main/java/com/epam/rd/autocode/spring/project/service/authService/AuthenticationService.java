@@ -48,6 +48,7 @@ public class AuthenticationService {
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
+        user.setProvider("LOCAL");
         user.setActive(true);
 
         Client client = new Client(user);
@@ -76,6 +77,7 @@ public class AuthenticationService {
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.EMPLOYEE);
+        user.setProvider("LOCAL");
         user.setActive(true);
 
         Employee employee = new Employee(user);
