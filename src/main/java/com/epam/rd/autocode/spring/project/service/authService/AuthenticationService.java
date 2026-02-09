@@ -15,6 +15,7 @@ import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,6 +64,7 @@ public class AuthenticationService {
     }
 
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public JwtAuthenticationResponse signUpForEmployee(CreateUserReq request) {
 
         if (userRepository.existsByEmail(request.getEmail())){
