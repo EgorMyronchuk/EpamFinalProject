@@ -24,7 +24,7 @@
 <div class="form-container">
     <h2 style="color: #1a2a6c; margin-top: 0;" th:text="#{book.add.title}">Add New Book</h2>
 
-    <form th:action="@{/staff/books/add}" th:object="${book}" method="POST">
+    <form th:action="@{/staff/books/add}" th:object="${book}" method="POST" novalidate>
 
         <div th:if="${#fields.hasAnyErrors()}" class="error-msg-container">
             <strong th:text="#{book.form.error_header}">Please fix the following errors:</strong>

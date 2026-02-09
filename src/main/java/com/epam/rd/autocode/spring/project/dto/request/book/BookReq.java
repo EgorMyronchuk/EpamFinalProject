@@ -18,49 +18,47 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class BookReq {
 
-    @NotBlank(message = "Book name must not be blank")
-    @Size(max = 255, message = "Book name must be less than 255 characters")
+    @NotBlank(message = "{book.name.required}")
+    @Size(max = 255, message = "{book.name.size}")
     private String name;
 
     private String photoUrl;
 
-    @NotBlank(message = "Genre must not be blank")
-    @Size(max = 100, message = "Genre must be less than 100 characters")
+    @NotBlank(message = "{book.genre.required}")
+    @Size(max = 100, message = "{book.genre.size}")
     private String genre;
 
-    @NotNull(message = "Age group must be specified")
+    @NotNull(message = "{book.ageGroup.required}")
     private AgeGroup ageGroup;
 
-    @NotNull(message = "Price must be specified")
-    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-    @Digits(integer = 8, fraction = 2, message = "Price must have up to 8 integer digits and 2 decimal places")
+    @NotNull(message = "{book.price.required}")
+    @DecimalMin(value = "0.0", inclusive = false, message = "{book.price.min}")
+    @Digits(integer = 8, fraction = 2, message = "{book.price.digits}")
     private BigDecimal price;
 
-    @NotNull(message = "Publication date must be specified")
-    @PastOrPresent(message = "Publication date cannot be in the future")
-    @NotNull(message = "Date is required")
+    @NotNull(message = "{book.date.required}")
+    @PastOrPresent(message = "{book.date.past}")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate publicationDate;
 
-    @NotBlank(message = "Author name must not be blank")
-    @Size(max = 255, message = "Author name must be less than 255 characters")
+    @NotBlank(message = "{book.author.required}")
+    @Size(max = 255, message = "{book.author.size}")
     private String author;
 
-    @NotNull(message = "Number of pages must be specified")
-    @Min(value = 1, message = "Book must have at least 1 page")
-    @Max(value = 10000, message = "Page count is unrealistically large")
+    @NotNull(message = "{book.pages.required}")
+    @Min(value = 1, message = "{book.pages.min}")
+    @Max(value = 10000, message = "{book.pages.max}")
     private Integer pages;
 
-    @Size(max = 2000, message = "Characteristics must be less than 2000 characters")
+    @Size(max = 2000, message = "{book.characteristics.size}")
     private String characteristics;
 
-    @Size(max = 5000, message = "Description must be less than 5000 characters")
+    @Size(max = 5000, message = "{book.description.size}")
     private String description;
 
-    @Min(value = 1, message = "Price might be more then 0 ")
+    @Min(value = 0, message = "{book.soldAmount.min}")
     private Integer soldAmount;
 
-    @NotNull(message = "Language must be specified")
+    @NotNull(message = "{book.language.required}")
     private Language language;
-
 }
