@@ -4,10 +4,14 @@ import com.epam.rd.autocode.spring.project.dto.jwtDTO.JwtAuthenticationResponse;
 import com.epam.rd.autocode.spring.project.dto.request.auth.CreateUserReq;
 import com.epam.rd.autocode.spring.project.dto.request.auth.SignInReq;
 import com.epam.rd.autocode.spring.project.service.authService.AuthenticationService;
+import com.epam.rd.autocode.spring.project.service.authService.CustomUserDetailsService;
+import com.epam.rd.autocode.spring.project.service.authService.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthenticationService authService;
+    private final JwtService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
 
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -58,6 +64,16 @@ public class AuthController {
         jwtCookie.setPath("/");
         jwtCookie.setMaxAge(24 * 60 * 60);
         response.addCookie(jwtCookie);
+
+        String email = jwtService.extractEmailName(jwtResponse.getToken());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+
+        if (isAdmin) {
+            return "redirect:/secret/admin";
+        }
 
         return "redirect:/home";
     }
