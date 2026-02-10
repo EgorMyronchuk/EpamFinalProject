@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{staff.title}">Staff Dashboard</title>
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <style>
+        body { margin: 0; padding-top: 100px; background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .dashboard-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 30px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { color: #777; font-size: 14px; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+        .status-active { background: #e0fff0; color: #2ecc71; }
+        .status-blocked { background: #ffebeb; color: #e74c3c; }
+        .order-PENDING { color: #f39c12; }
+        .order-PROCESSING { color: #3498db; }
+        .order-SHIPPED { color: #2ecc71; }
+        .order-CANCELED { color: #e74c3c; }
+        .action-btn { border: none; background: none; cursor: pointer; font-size: 18px; transition: 0.2s; }
+        .btn-add { background: #1a2a6c; color: white; padding: 10px 20px; border-radius: 50px; text-decoration: none; display: inline-block; margin-bottom: 15px; }
+
+        .pagination-container { margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; }
+        .btn-nav { text-decoration: none; padding: 8px 16px; background: #fff; border: 1px solid #1a2a6c; color: #1a2a6c; border-radius: 20px; font-weight: bold; transition: 0.3s; font-size: 14px; }
+        .btn-nav:hover { background: #1a2a6c; color: white; }
+        .btn-nav.disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; pointer-events: none; }
+        .page-info { font-size: 14px; color: #666; font-weight: 500; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+<div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+<div class="container">
+    <h1 style="color: #1a2a6c;" th:text="#{staff.title}">Staff Panel</h1>
+
+    <div class="dashboard-card">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 th:text="#{staff.books.title}">Books Management</h2>
+            <a th:href="@{/staff/books/add}" class="btn-add" th:text="#{staff.books.add}">+ Add New Book</a>
+        </div>
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{staff.books.table.title}">Title</th>
+                <th th:text="#{staff.books.table.author}">Author</th>
+                <th th:text="#{staff.books.table.price}">Price</th>
+                <th th:text="#{staff.books.table.actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="book : ${booksPage.content}">
+                <td th:text="${book.name}" style="font-weight: bold;"></td>
+                <td th:text="${book.author}"></td>
+                <td th:text="${book.price} + ' ₴'"></td>
+                <td>
+                    <a th:href="@{/staff/books/edit/{id}(id=${book.id})}" style="text-decoration: none; margin-right: 10px;">✏️</a>
+                    <form th:action="@{/staff/books/delete}" method="POST" style="display: inline;">
+                        <input type="hidden" name="name" th:value="${book.name}">
+                        <button type="submit" class="action-btn" th:onclick="return confirm([[#{staff.books.delete.confirm}]])">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination-container">
+            <a th:href="@{/staff(bookPage=${booksPage.number - 1}, orderPage=${ordersPage.number}, userPage=${usersPage.number})}"
+               class="btn-nav" th:classappend="${!booksPage.hasPrevious()} ? 'disabled'" th:text="#{pagination.prev}">⬅️ Prev</a>
+            <span class="page-info" th:text="#{pagination.info(${booksPage.number + 1}, ${booksPage.totalPages})}"></span>
+            <a th:href="@{/staff(bookPage=${booksPage.number + 1}, orderPage=${ordersPage.number}, userPage=${usersPage.number})}"
+               class="btn-nav" th:classappend="${!booksPage.hasNext()} ? 'disabled'" th:text="#{pagination.next}">Next ➡️</a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h2 th:text="#{staff.orders.title}">Orders Management</h2>
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{staff.orders.table.id}">ID</th>
+                <th th:text="#{staff.orders.table.client}">Client Info</th>
+                <th th:text="#{staff.orders.table.price}">Price</th>
+                <th th:text="#{staff.orders.table.status}">Status</th>
+                <th th:text="#{staff.orders.table.action}">Action</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${ordersPage.content}">
+                <td th:text="${order.id}"></td>
+                <td>
+                    <div th:text="${order.clientEmail}" style="font-weight: bold; font-size: 13px; color: #1a2a6c;"></div>
+                    <div th:text="${order.clientPhoneNumber}" style="font-size: 12px; color: #555;"></div>
+                    <div th:text="${order.clientDeliveryAddress}" style="font-size: 11px; color: #888; font-style: italic; max-width: 200px;"></div>
+                </td>
+                <td th:text="${order.price} + ' ₴'"></td>
+                <td>
+                    <span th:class="'order-' + ${order.status}"
+                          th:text="#{${'status.' + order.status.toString().toLowerCase()}}"></span>
+                </td>
+                <td>
+                    <form th:action="@{/staff/orders/change-status}" method="POST" style="display: flex; gap: 5px;">
+                        <input type="hidden" name="orderId" th:value="${order.id}">
+                        <select name="status" style="padding: 4px; border-radius: 4px;">
+                            <option th:each="st : ${T(com.epam.rd.autocode.spring.project.model.enums.OrderStatus).values()}"
+                                    th:value="${st}"
+                                    th:text="#{${'status.' + st.toString().toLowerCase()}}"
+                                    th:selected="${st == order.status}"></option>
+                        </select>
+                        <button type="submit" class="action-btn" style="font-size: 14px; background: #eee; padding: 2px 8px; border-radius: 4px;">OK</button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination-container">
+            <a th:href="@{/staff(bookPage=${booksPage.number}, orderPage=${ordersPage.number - 1}, userPage=${usersPage.number})}"
+               class="btn-nav" th:classappend="${!ordersPage.hasPrevious()} ? 'disabled'" th:text="#{pagination.prev}">⬅️ Prev</a>
+            <span class="page-info" th:text="#{pagination.info(${ordersPage.number + 1}, ${ordersPage.totalPages})}"></span>
+            <a th:href="@{/staff(bookPage=${booksPage.number}, orderPage=${ordersPage.number + 1}, userPage=${usersPage.number})}"
+               class="btn-nav" th:classappend="${!ordersPage.hasNext()} ? 'disabled'" th:text="#{pagination.next}">Next ➡️</a>
+        </div>
+    </div>
+
+    <div class="dashboard-card">
+        <h2 th:text="#{staff.users.title}">Users Management</h2>
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{staff.users.table.name}">Name</th>
+                <th th:text="#{staff.users.table.email}">Email</th>
+                <th th:text="#{staff.users.table.status}">Status</th>
+                <th th:text="#{staff.users.table.actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${usersPage.content}">
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.email}"></td>
+                <td>
+                    <span th:if="${user.active}" class="status-badge status-active" th:text="#{staff.users.status.active}">Active</span>
+                    <span th:unless="${user.active}" class="status-badge status-blocked" th:text="#{staff.users.status.blocked}">Blocked</span>
+                </td>
+                <td>
+                    <form th:action="@{${user.active ? '/staff/users/block' : '/staff/users/unblock'}}" method="POST" style="display: inline;">
+                        <input type="hidden" name="email" th:value="${user.email}">
+                        <button type="submit" class="action-btn"
+                                th:text="${user.active ? '🚫' : '✅'}"></button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination-container">
+            <a th:href="@{/staff(bookPage=${booksPage.number}, orderPage=${ordersPage.number}, userPage=${usersPage.number - 1})}"
+               class="btn-nav" th:classappend="${!usersPage.hasPrevious()} ? 'disabled'" th:text="#{pagination.prev}">⬅️ Prev</a>
+            <span class="page-info" th:text="#{pagination.info(${usersPage.number + 1}, ${usersPage.totalPages})}"></span>
+            <a th:href="@{/staff(bookPage=${booksPage.number}, orderPage=${ordersPage.number}, userPage=${usersPage.number + 1})}"
+               class="btn-nav" th:classappend="${!usersPage.hasNext()} ? 'disabled'" th:text="#{pagination.next}">Next ➡️</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

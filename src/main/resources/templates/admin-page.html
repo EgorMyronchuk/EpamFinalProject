@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{admin.title}">Admin Panel - Create Employee</title>
+    <style>
+        body { margin: 0; padding-top: 100px; background: #f4f7f6; font-family: 'Segoe UI', sans-serif; }
+        .admin-container { max-width: 500px; margin: 0 auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 700; color: #1a2a6c; }
+        input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; transition: 0.3s; box-sizing: border-box; }
+        input:focus { border-color: #1a2a6c; }
+        .btn-create { background: linear-gradient(135deg, #1a2a6c 0%, #203a43 100%); color: white; border: none; padding: 14px; border-radius: 50px; width: 100%; font-weight: 800; cursor: pointer; transition: 0.3s; margin-top: 10px; }
+        .btn-create:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(26,42,108,0.4); }
+        .field-error { color: #e74c3c; font-size: 12px; margin-top: 5px; font-weight: 600; }
+        .success-banner { background: #d4edda; color: #155724; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+
+<div class="admin-container">
+    <h2 th:text="#{admin.header}" style="color: #1a2a6c; text-align: center; margin-bottom: 30px;">Create New Employee</h2>
+
+    <div th:if="${param.successMessage}" class="success-banner">
+        <span th:text="${param.successMessage}"></span>
+    </div>
+
+    <form th:action="@{/secret/admin}" th:object="${createUserReq}" method="POST" novalidate>
+
+        <div class="form-group">
+            <label th:text="#{auth.email}">Email</label>
+            <input type="email" th:field="*{email}" th:placeholder="#{auth.placeholder.email}">
+            <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+        </div>
+
+        <div class="form-group">
+            <label th:text="#{auth.name}">Full Name</label>
+            <input type="text" th:field="*{name}" th:placeholder="#{auth.placeholder.name}">
+            <div class="field-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+        </div>
+
+        <div class="form-group">
+            <label th:text="#{auth.password}">Password</label>
+            <input type="password" th:field="*{password}" th:placeholder="#{auth.placeholder.password}">
+            <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+        </div>
+
+        <button type="submit" class="btn-create" th:text="#{admin.btn.create}">Create Employee</button>
+    </form>
+</div>
+
+</body>
+</html>

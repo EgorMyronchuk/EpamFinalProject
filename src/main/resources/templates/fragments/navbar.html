@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+
+<div th:fragment="lang-button">
+    <style>
+        :root {
+            --en-bg: linear-gradient(135deg, #1a2a6c 0%, #203a43 100%);
+            --uk-bg: linear-gradient(135deg, #0052D4 0%, #6FB1FC 50%, #f5af19 100%);
+            --logout-bg: #e74c3c;
+            --transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .left-controls {
+            position: fixed;
+            top: 25px;
+            left: 25px;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Уменьшил зазор для компактности */
+        }
+
+        .lang-checkbox { display: none; }
+
+        .lang-label {
+            width: 92px;
+            height: 40px;
+            background: var(--en-bg);
+            border-radius: 50px;
+            position: relative;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            transition: var(--transition);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.35);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .lang-label span {
+            color: white; font-size: 12px; font-weight: 800; z-index: 1;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.4); user-select: none;
+        }
+
+        .lang-ball {
+            width: 32px; height: 32px; background: #ffffff; border-radius: 50%;
+            position: absolute; left: 4px; transition: var(--transition); z-index: 2;
+        }
+
+        .lang-checkbox:checked + .lang-label { background: var(--uk-bg); }
+        .lang-checkbox:checked + .lang-label .lang-ball { transform: translateX(50px); }
+
+        /* Общие стили для кнопок слева */
+        .btn-left {
+            text-decoration: none;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        /* Кнопка Logout */
+        .logout-btn {
+            background: white;
+            color: var(--logout-bg);
+            border: 2px solid rgba(231, 76, 60, 0.1);
+        }
+
+        .logout-btn:hover {
+            background: var(--logout-bg);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Кнопка Staff */
+        .staff-nav-btn {
+            background: #1a2a6c;
+            color: white;
+        }
+
+        .staff-nav-btn:hover {
+            transform: translateY(-2px);
+            background: #203a43;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .logout-form { margin: 0; padding: 0; }
+
+        @media (max-width: 850px) {
+            .left-controls { top: 15px; left: 15px; flex-direction: column; align-items: flex-start; }
+            .btn-left { padding: 8px 12px; font-size: 11px; }
+        }
+    </style>
+
+    <div class="left-controls">
+        <div class="lang-switcher">
+            <input type="checkbox" id="lang-toggle" class="lang-checkbox"
+                   th:checked="${#locale.language == 'uk'}"
+                   onchange="changeLanguage(this.checked)">
+            <label for="lang-toggle" class="lang-label">
+                <span>EN</span>
+                <span>UK</span>
+                <div class="lang-ball"></div>
+            </label>
+        </div>
+
+        <form th:action="@{/logout}" method="post" class="logout-form" sec:authorize="isAuthenticated()">
+            <button type="submit" class="btn-left logout-btn">
+                <span th:text="#{auth.logout}">Logout</span>
+            </button>
+        </form>
+
+        <a th:href="@{/staff}"
+           class="btn-left staff-nav-btn"
+           sec:authorize="hasRole('EMPLOYEE') and !hasRole('ADMIN')"
+           th:text="'🛠️ ' + #{nav.staff_panel}">
+            🛠️ Staff Panel
+        </a>
+    </div>
+
+    <script>
+        function changeLanguage(isUk) {
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', isUk ? 'uk' : 'en');
+            window.location.href = url.toString();
+        }
+    </script>
+</div>
+
+<div th:fragment="search-bar(currentView)">
+    <style>
+        .search-wrapper {
+            position: fixed;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            width: 30%;
+            min-width: 250px;
+        }
+
+        .search-form {
+            display: flex;
+            background: white;
+            padding: 4px;
+            border-radius: 50px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            outline: none;
+            font-size: 14px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .search-button {
+            background: var(--en-bg);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .search-button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        @media (max-width: 850px) {
+            .search-wrapper {
+                top: 85px;
+                width: 80%;
+            }
+        }
+    </style>
+
+    <div class="search-wrapper">
+        <form th:action="@{/books}" method="GET" class="search-form">
+            <input type="hidden" name="fromView" th:value="${currentView}">
+
+            <input type="text" name="query"
+                   class="search-input"
+                   th:placeholder="#{search.placeholder}"
+                   required>
+            <button type="submit" class="search-button" th:text="#{search.button}">Search</button>
+        </form>
+    </div>
+</div>
+
+<div th:fragment="user-balance">
+    <style>
+        .balance-container {
+            background: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 800;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            color: #2ecc71;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .balance-container:hover {
+            transform: translateY(-2px);
+            background: #f0fff4;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            z-index: 20000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .deposit-modal {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .deposit-modal h3 {
+            margin-bottom: 20px;
+            color: #1a2a6c;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .deposit-input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            outline: none;
+            font-weight: 700;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .btn-submit-deposit {
+            background: var(--en-bg);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: opacity 0.3s;
+        }
+
+        .btn-submit-deposit:hover { opacity: 0.9; }
+    </style>
+
+    <div class="balance-container" th:if="${userBalance != null}" onclick="openDepositModal()">
+        <span th:text="${userBalance}">0.00</span>
+        <span class="currency-symbol" th:text="${#locale.language == 'en' ? 'UAH' : 'UAH'}">UAH</span>
+    </div>
+
+    <div id="depositModal" class="modal-overlay" onclick="closeDepositModal(event)">
+        <div class="deposit-modal" onclick="event.stopPropagation()">
+            <h3 th:text="#{profile.deposit.title}">Top Up Balance</h3>
+            <form th:action="@{/profile/deposit}" method="POST">
+                <input type="number"
+                       name="amount"
+                       class="deposit-input"
+                       th:placeholder="#{profile.deposit.placeholder}"
+                       min="1"
+                       required>
+                <button type="submit" class="btn-submit-deposit" th:text="#{profile.deposit.button}">
+                    Add Money
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openDepositModal() {
+            document.getElementById('depositModal').style.display = 'flex';
+        }
+
+        function closeDepositModal(event) {
+            document.getElementById('depositModal').style.display = 'none';
+        }
+    </script>
+</div>
+
+<div th:fragment="cart-button">
+    <style>
+        .cart-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .cart-link {
+            background: white;
+            color: #333;
+            text-decoration: none;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            font-size: 20px;
+        }
+
+        .cart-link:hover {
+            transform: translateY(-2px);
+            background: #f8f9fa;
+            color: #0052D4;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 50px;
+            border: 2px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+
+    <div class="cart-wrapper" th:if="${cartItemsCount != null}">
+        <a th:href="@{/orders}" class="cart-link">
+            🛒
+            <span class="cart-badge" th:text="${cartItemsCount}">0</span>
+        </a>
+    </div>
+</div>
+
+<div th:fragment="nav-menu">
+    <style>
+        .main-nav {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            z-index: 10000;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-link {
+            background: white;
+            color: #333;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-family: 'Segoe UI', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            background: #f8f9fa;
+            color: #0052D4;
+        }
+
+        @media (max-width: 480px) {
+            .main-nav {
+                top: 15px;
+                right: 15px;
+                gap: 8px;
+            }
+            .nav-link {
+                padding: 8px 12px;
+                font-size: 11px;
+            }
+        }
+    </style>
+
+    <nav class="main-nav">
+        <div sec:authorize="hasRole('ROLE_USER') and !hasAnyRole('ROLE_ADMIN', 'ROLE_EMPLOYEE')"
+             th:replace="~{::cart-button}"></div>
+
+        <div th:if="${#httpServletRequest.getServletPath() != '/profile'}"
+             th:replace="~{::user-balance}"></div>
+
+        <a th:href="@{/books}" class="nav-link books-btn" th:text="#{nav.books}">Books</a>
+        <a th:href="@{/home}" class="nav-link" th:text="#{nav.home}">Home</a>
+        <a th:href="@{/profile}" class="nav-link" th:text="#{nav.profile}">Profile</a>
+    </nav>
+</div>
+
+</body>
+</html>

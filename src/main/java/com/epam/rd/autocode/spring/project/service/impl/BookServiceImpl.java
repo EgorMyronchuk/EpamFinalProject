@@ -1,17 +1,25 @@
 package com.epam.rd.autocode.spring.project.service.impl;
 
-import com.epam.rd.autocode.spring.project.dto.BookDTO;
+import com.epam.rd.autocode.spring.project.dto.filterDTO.BookFilter;
+import com.epam.rd.autocode.spring.project.dto.request.book.BookReq;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookFullResp;
+import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
 import com.epam.rd.autocode.spring.project.dto.mapper.BookMapper;
+import com.epam.rd.autocode.spring.project.exception.BookException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.model.Book;
+import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.repo.BookRepository;
+import com.epam.rd.autocode.spring.project.repo.specification.BookSpecifications;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,56 +29,85 @@ public class BookServiceImpl implements BookService {
 
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
+    private final BookSpecifications bookSpecifications;
+
 
     @Override
-    public BookDTO addBook(BookDTO book) {
+    public BookRes addBook(BookReq book) {
         Book entity = bookMapper.toEntity(book);
+        entity.setSoldAmount(0);
         Book saved = bookRepository.save(entity);
         return bookMapper.toDto(saved);
     }
 
     @Override
-    public List<BookDTO> getAllBooks() {
-        return bookRepository.findAll().stream()
-                .map(bookMapper::toDto)
-                .toList();
+    public Page<BookRes> getAllBooks(Pageable pageable) {
+        return bookRepository.findAll(pageable)
+                .map(bookMapper::toDto);
     }
 
     @Override
-    public BookDTO getBookByName(String name) {
-        Optional<Book> bookOpt = bookRepository.findByName(name);
-        if (bookOpt.isPresent()) {
-            return bookMapper.toDto(bookOpt.get());
-        }
-        throw new NotFoundException("Book with name :" + name + " not found");
-    }
+    @Transactional
+    public BookRes updateBookById(Long id, BookReq bookReq ){
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
-    @Override
-    public BookDTO updateBookByName(String name, BookDTO bookDto) {
-        Book book = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException("Book with name :" + name + " not found"));
-
-        book.setName(bookDto.getName());
-        book.setGenre(bookDto.getGenre());
-        book.setAgeGroup(bookDto.getAgeGroup());
-        book.setPrice(bookDto.getPrice());
-        book.setPublicationDate(bookDto.getPublicationDate());
-        book.setAuthor(bookDto.getAuthor());
-        book.setPages(bookDto.getPages());
-        book.setCharacteristics(bookDto.getCharacteristics());
-        book.setDescription(bookDto.getDescription());
-        book.setLanguage(bookDto.getLanguage());
+        bookMapper.updateBookFromDto(bookReq, book);
 
         Book saved = bookRepository.save(book);
 
         return bookMapper.toDto(saved);
     }
 
+
     @Override
     public void deleteBookByName(String name) throws NotFoundException {
         Book book = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.NOT_FOUND));
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
         bookRepository.delete(book);
+    }
+
+    public List<BookRes> findBestSellers(Pageable limitTen) {
+
+        return bookRepository.findAllByOrderBySoldAmountDesc(limitTen)
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    public List<BookRes> findForChild(Pageable pageable) {
+        return bookRepository
+                .findAllByAgeGroup(AgeGroup.CHILD, pageable)
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    public List<BookRes> findNew(Pageable pageable) {
+        return bookRepository
+                .findAllByOrderByPublicationDateDesc(pageable)
+                .map(bookMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public Page<BookRes> getFilteredBooks(BookFilter filter, Pageable pageable) {
+        var spec = Specification.where(bookSpecifications.search(filter.getQuery()))
+                .and(bookSpecifications.hasGenres(filter.getGenres()))
+                .and(bookSpecifications.hasAgeGroups(filter.getAgeGroups()))
+                .and(bookSpecifications.hasLanguages(filter.getLanguages()))
+                .and(bookSpecifications.priceBetween(filter.getMinPrice(), filter.getMaxPrice()));
+
+        return bookRepository.findAll(spec, pageable).map(bookMapper::toDto);
+    }
+
+    public List<String> getUniqueGenres() {
+        return bookRepository.findDistinctGenres();
+    }
+
+    public BookFullResp getBookFull(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
+
+        return bookMapper.toFullResp(book);
     }
 }

@@ -1,18 +1,14 @@
 package com.epam.rd.autocode.spring.project.service;
 
-import com.epam.rd.autocode.spring.project.dto.ClientDTO;
+import com.epam.rd.autocode.spring.project.dto.response.client.ClientRes;
+import com.epam.rd.autocode.spring.project.model.Client;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.Locale;
 
 public interface ClientService {
 
-    List<ClientDTO> getAllClients();
+    void changeBalance(String email, BigDecimal newBalance);
 
-    ClientDTO getClientByEmail(String email);
-
-    ClientDTO updateClientByEmail(String email, ClientDTO client);
-
-    void deleteClientByEmail(String email);
-
-    ClientDTO addClient(ClientDTO client);
+    BigDecimal getBalance(String email);
 }

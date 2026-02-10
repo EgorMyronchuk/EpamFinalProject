@@ -1,24 +1,13 @@
 package com.epam.rd.autocode.spring.project.dto.mapper;
-
 import com.epam.rd.autocode.spring.project.dto.BookItemDTO;
 import com.epam.rd.autocode.spring.project.model.BookItem;
-import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
+import org.mapstruct.MappingConstants;
 
-import java.util.Objects;
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface BookItemMapper {
 
-@RequiredArgsConstructor
-@Component
-public class BookItemMapper {
+    BookItem toEntity(BookItemDTO dto);
 
-    private final ModelMapper mapper;
-
-    public BookItem toEntity(BookItemDTO dto) {
-        return Objects.isNull(dto) ? null : mapper.map(dto, BookItem.class);
-    }
-
-    public BookItemDTO toDto(BookItem entity) {
-        return Objects.isNull(entity) ? null : mapper.map(entity, BookItemDTO.class);
-    }
+    BookItemDTO toDto(BookItem entity);
 }

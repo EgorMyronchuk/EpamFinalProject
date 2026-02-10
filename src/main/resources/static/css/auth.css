@@ -1,0 +1,123 @@
+* {
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f6f8;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-container {
+    background: #ffffff;
+    padding: 30px;
+    width: 350px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.auth-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.form-group input:focus {
+    border-color: #4a90e2;
+    outline: none;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #4a90e2;
+    color: #ffffff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #357abd;
+}
+
+.switch {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.switch a {
+    color: #4a90e2;
+    text-decoration: none;
+}
+
+.switch a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: 5px;
+    display: block;
+    font-weight: 500;
+}
+
+input[type="email"].error,
+input[type="password"].error,
+input[type="text"].error {
+    border: 1px solid #e74c3c;
+}
+
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    padding: 15px 25px;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom: 10px;
+    animation: slideIn 0.5s ease-out; /* Анимация появления */
+    font-weight: 500;
+    min-width: 250px;
+}
+
+.toast.error { background-color: #e74c3c; border-left: 5px solid #c0392b; }
+.toast.success { background-color: #2ecc71; border-left: 5px solid #27ae60; }
+
+/* Анимация выезда справа */
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Класс для плавного исчезновения */
+.fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+}

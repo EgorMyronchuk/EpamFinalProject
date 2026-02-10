@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+    <link rel="stylesheet" th:href="@{/css/cart-button.css}">
+    <title th:text="${book.name}">Book Details</title>
+    <style>
+        body {
+            background-color: #f4f7f6;
+            margin: 0;
+            padding-top: 120px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 50px;
+        }
+        .book-image {
+            width: 350px;
+            flex-shrink: 0;
+        }
+        .book-image img {
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .book-info {
+            flex-grow: 1;
+        }
+        .book-info h1 {
+            margin: 0 0 10px 0;
+            color: #1a2a6c;
+            font-size: 32px;
+        }
+        .author {
+            font-size: 20px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+        .price {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0052D4;
+            margin-bottom: 25px;
+        }
+        .description {
+            line-height: 1.6;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        .specs-table td {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .spec-label {
+            font-weight: bold;
+            color: #888;
+            width: 150px;
+        }
+        .btn-buy {
+            background: linear-gradient(135deg, #1a2a6c 0%, #203a43 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .btn-buy:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+<div th:replace="~{fragments/navbar :: lang-button}"></div>
+<div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+<div class="container">
+    <div class="book-image">
+        <img th:src="${book.photoUrl}" alt="Cover">
+    </div>
+    <div class="book-info">
+        <h1 th:text="${book.name}">Title</h1>
+        <div class="author" th:text="${book.author}">Author</div>
+        <div class="price" th:text="${book.price} + ' ₴'">Price</div>
+
+        <table class="specs-table">
+            <tr>
+                <td class="spec-label" th:text="#{books.filter.genre}">Genre</td>
+                <td th:text="${book.genre}">-</td>
+            </tr>
+            <tr>
+                <td class="spec-label" th:text="#{books.filter.language}">Language</td>
+                <td th:text="${book.language}">-</td>
+            </tr>
+            <tr>
+                <td class="spec-label" th:text="#{books.filter.age}">Age Group</td>
+                <td th:text="${book.ageGroup}">-</td>
+            </tr>
+            <tr>
+                <td class="spec-label" th:text="#{books.filter.pages}">Pages</td>
+                <td th:text="${book.pages}">-</td>
+            </tr>
+        </table>
+
+        <div class="description" th:text="${book.description}">Description</div>
+
+        <form th:action="@{/cart/add}" method="POST">
+            <input type="hidden" name="bookId" th:value="${bookId}">
+            <button type="submit" class="btn-buy" th:text="#{home.buy}">Buy Now</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

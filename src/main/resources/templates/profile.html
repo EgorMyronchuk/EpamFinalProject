@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{nav.profile}">Profile</title>
+
+    <link rel="stylesheet" th:href="@{/css/notifications.css}">
+
+    <div th:replace="~{fragments/navbar :: lang-button}"></div>
+    <div th:replace="~{fragments/navbar :: nav-menu}"></div>
+
+    <style>
+        body {
+            background-color: #f4f7f6;
+            margin: 0;
+            padding-top: 120px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-header {
+            background: linear-gradient(135deg, #1a2a6c, #0052D4);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-info h2 { margin: 0; font-size: 24px; }
+        .user-info p { margin: 5px 0 0; opacity: 0.8; font-size: 14px; }
+
+        .balance-box {
+            text-align: right;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .balance-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .balance-value { font-size: 22px; font-weight: 800; }
+
+        .profile-body { padding: 40px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .input-group { display: flex; flex-direction: column; }
+        .input-group label {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #444;
+            font-size: 14px;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus { border-color: #0052D4; outline: none; }
+        .input-group input[readonly] { background: #f9f9f9; cursor: not-allowed; }
+
+        .error-msg { color: #e74c3c; font-size: 12px; margin-top: 5px; font-weight: 600; }
+
+        .actions {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-update {
+            background: #1a2a6c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-update:hover { background: #0052D4; transform: translateY(-2px); }
+
+        /* Секция заказов */
+        .orders-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .orders-section h3 {
+            font-size: 20px;
+            color: #1a2a6c;
+            margin-bottom: 20px;
+        }
+
+        .order-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .order-table th {
+            text-align: left;
+            padding: 12px;
+            color: #777;
+            font-size: 13px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #eee;
+        }
+
+        .order-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f9f9f9;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .btn-cancel-order {
+            background: none;
+            border: 1px solid #ddd;
+            color: #999;
+            padding: 5px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: 0.3s;
+        }
+
+        .btn-cancel-order:hover { border-color: #f44336; color: #f44336; }
+
+        .danger-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-delete {
+            background: none;
+            border: 1px solid #e74c3c;
+            color: #e74c3c;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-delete:hover { background: #e74c3c; color: white; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments/notifications :: toast}"></div>
+
+<div class="main-container">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="user-info">
+                <h2 th:text="${profile.name}">User Name</h2>
+                <p th:text="${profile.email}">user@example.com</p>
+            </div>
+            <div class="balance-box" th:if="${userBalance != null}">
+                <div class="balance-label" th:text="#{profile.balance}">Balance</div>
+                <div class="balance-value">
+                    <span th:text="${userBalance}">0.00</span>
+                    <small th:text="#{currency.uah}">UAH</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-body">
+            <form th:action="@{/profile/update}" th:object="${profile}" method="post">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label th:text="#{auth.email}">Email</label>
+                        <input type="email" th:field="*{email}" readonly>
+                    </div>
+                    <div class="input-group">
+                        <label th:text="#{auth.name}">Name</label>
+                        <input type="text" th:field="*{name}" th:classappend="${#fields.hasErrors('name')} ? 'error'">
+                        <span class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                    </div>
+                    <div class="input-group">
+                        <label th:text="#{client.phone}">Phone Number</label>
+                        <input type="text" th:field="*{phoneNumber}" placeholder="+380..." th:classappend="${#fields.hasErrors('phoneNumber')} ? 'error'">
+                        <span class="error-msg" th:if="${#fields.hasErrors('phoneNumber')}" th:errors="*{phoneNumber}"></span>
+                    </div>
+                    <div class="input-group">
+                        <label th:text="#{client.address}">Address</label>
+                        <input type="text" th:field="*{deliveryAddress}"
+                               th:classappend="${#fields.hasErrors('deliveryAddress')} ? 'error'">
+
+                        <span class="error-msg" th:if="${#fields.hasErrors('deliveryAddress')}"
+                              th:errors="*{deliveryAddress}"></span>
+                    </div>
+                </div>
+                <div class="actions">
+                    <button type="submit" class="btn-update" th:text="#{profile.save}">Save Changes</button>
+                </div>
+            </form>
+
+            <div class="orders-section">
+                <h3 th:text="#{profile.orders.title}">My Orders</h3>
+
+                <div th:if="${#lists.isEmpty(orders)}" style="text-align: center; color: #999; padding: 20px;">
+                    <p th:text="#{profile.orders.empty}">No orders yet</p>
+                </div>
+
+                <table class="order-table" th:if="${not #lists.isEmpty(orders)}">
+                    <thead>
+                    <tr>
+                        <th th:text="#{profile.orders.date}">Date</th>
+                        <th th:text="#{profile.orders.price}">Price</th>
+                        <th th:text="#{profile.orders.status}">Status</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${orders}">
+                        <td th:text="${#temporals.format(order.orderDate, 'dd.MM.yyyy HH:mm')}">01.01.2024</td>
+                        <td style="font-weight: 700;" th:text="${order.price + ' ₴'}">100 ₴</td>
+                        <td>
+                                <span style="font-weight: 600; color: #1a2a6c;"
+                                      th:text="#{${'status.' + order.status.toString().toLowerCase()}}">
+                                    Pending
+                                </span>
+                        </td>
+                        <td style="text-align: right;">
+                            <form th:if="${order.status.toString() == 'PENDING'}"
+                                  th:action="@{/orders/delete}" method="post"
+                                  th:onsubmit="|return confirm('#{profile.orders.cancel.confirm}');|">
+                                <input type="hidden" name="orderId" th:value="${order.id}">
+                                <button type="submit" class="btn-cancel-order" th:text="#{profile.orders.cancel}">Cancel</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="danger-section">
+                <form th:action="@{/profile/delete}" method="post"
+                      th:onsubmit="|return confirm('#{profile.delete.confirm}');|">
+                    <button type="submit" class="btn-delete" th:text="#{profile.delete}">Delete Account</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+        const toasts = document.querySelectorAll('.toast');
+        toasts.forEach(t => {
+            t.classList.add('fade-out');
+            setTimeout(() => t.remove(), 500);
+        });
+    }, 3000);
+</script>
+
+</body>
+</html>

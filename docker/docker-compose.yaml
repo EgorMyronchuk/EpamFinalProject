@@ -1,0 +1,13 @@
+version: '3.3'
+
+services:
+  postgres96:
+    image: postgres:9.6
+    restart: unless-stopped
+    container_name: pg_2
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
