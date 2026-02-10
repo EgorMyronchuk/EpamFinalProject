@@ -8,24 +8,31 @@ import com.epam.rd.autocode.spring.project.dto.response.user.UserStatusRes;
 import com.epam.rd.autocode.spring.project.model.enums.AgeGroup;
 import com.epam.rd.autocode.spring.project.model.enums.Language;
 import com.epam.rd.autocode.spring.project.model.enums.OrderStatus;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.*;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.Locale;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -41,30 +48,31 @@ public class StaffControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private BookService bookService;
-
     @MockBean
     private JwtService jwtService;
-
     @MockBean
     private CartService cartService;
-
     @MockBean
     private UserService userService;
-
     @MockBean
     private OrderService orderService;
-
     @MockBean
     private EmployeeService employeeService;
-
     @MockBean
     private UserRepository userRepository;
-
     @MockBean
     private ClientService clientService;
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private RefreshTokenService refreshTokenService;
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
+    @Qualifier("messageSource")
+    @MockBean
+    private MessageSource messageSource;
 
     @Test
     @WithMockUser(roles = "EMPLOYEE")
@@ -74,7 +82,6 @@ public class StaffControllerTest {
         Page<OrderRes> ordersPage = new PageImpl<>(Collections.emptyList());
         Page<UserStatusRes> usersPage = new PageImpl<>(Collections.emptyList());
 
-        // Налаштовуємо моки з відповідними типами
         when(bookService.getAllBooks(any(Pageable.class))).thenReturn(booksPage);
         when(orderService.getAllOrders(any(Pageable.class))).thenReturn(ordersPage);
         when(userService.getAllUsersWithStaff(any(Pageable.class))).thenReturn(usersPage);
@@ -126,8 +133,9 @@ public class StaffControllerTest {
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void processAddBook_Success_ShouldRedirect() throws Exception {
-        BookReq validBook = new BookReq();
-        validBook.setName("Spring in Action");
+        doReturn("Book added successfully")
+                .when(messageSource)
+                .getMessage(anyString(), any(), any(Locale.class));
 
         mockMvc.perform(post("/staff/books/add")
                         .param("name", "Spring in Action")
@@ -140,7 +148,7 @@ public class StaffControllerTest {
                         .param("ageGroup", "ADULT")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/staff"));
+                .andExpect(redirectedUrlPattern("/staff?successMessage=*"));
 
         verify(bookService).addBook(any(BookReq.class));
     }
@@ -158,25 +166,31 @@ public class StaffControllerTest {
                 .andExpect(model().attributeExists("ageGroups", "languages", "book"));
     }
 
+    @BeforeEach
+    void setUp() {
+        doReturn("Success message")
+                .when(messageSource)
+                .getMessage(anyString(), any(), any(Locale.class));
+    }
+
     @Test
     @WithMockUser(roles = "EMPLOYEE")
     void processUpdateBook_Success_ShouldRedirect() throws Exception {
-        BookReq validUpdate = new BookReq();
-        validUpdate.setName("Updated Title");
-        validUpdate.setAuthor("Some Author");
-        validUpdate.setGenre("Fiction");
-        validUpdate.setPrice(new BigDecimal("29.99"));
-        validUpdate.setPages(300);
-        validUpdate.setPublicationDate(LocalDate.now());
-        validUpdate.setLanguage(Language.ENGLISH);
-        validUpdate.setAgeGroup(AgeGroup.ADULT);
+        Long bookId = 1L;
 
-        mockMvc.perform(post("/staff/books/edit/1")
-                        .flashAttr("book", validUpdate)
+        mockMvc.perform(post("/staff/books/edit/{id}", bookId)
+                        .param("name", "Updated Name")
+                        .param("author", "Updated Author")
+                        .param("genre", "IT")
+                        .param("price", "600.00")
+                        .param("pages", "550")
+                        .param("publicationDate", "2023-01-01")
+                        .param("language", "ENGLISH")
+                        .param("ageGroup", "ADULT")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/staff"));
+                .andExpect(redirectedUrlPattern("/staff?successMessage=*"));
 
-        verify(bookService).updateBookById(eq(1L), any(BookReq.class));
+        verify(bookService).updateBookById(eq(bookId), any(BookReq.class));
     }
 }

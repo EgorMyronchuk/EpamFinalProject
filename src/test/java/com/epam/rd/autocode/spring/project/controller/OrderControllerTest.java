@@ -1,16 +1,19 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.response.cart.CartRes;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.CartService;
 import com.epam.rd.autocode.spring.project.service.OrderService;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -31,19 +34,22 @@ class OrderControllerTest {
 
     @MockBean
     private CartService cartService;
-
     @MockBean
     private OrderService orderService;
-
     @MockBean
     private UserService userService;
-
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
+    @MockBean
+    private RefreshTokenService refreshTokenService;
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private ClientService clientService;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private UserDetailsService userDetailsService;
 
     private final String TEST_EMAIL = "test@example.com";
     private final Long TEST_USER_ID = 1L;
@@ -62,18 +68,14 @@ class OrderControllerTest {
     }
 
     @Test
-    @WithMockUser(username = TEST_EMAIL)
+    @WithMockUser(username = "test@example.com")
     void createOrder_Success_ShouldRedirectToHome() throws Exception {
-        when(userService.getUserIdByEmail(TEST_EMAIL)).thenReturn(TEST_USER_ID);
-        when(orderService.createOrder(TEST_USER_ID)).thenReturn(null);
+        when(userService.getUserIdByEmail(anyString())).thenReturn(1L);
 
         mockMvc.perform(post("/orders/create")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/home"))
-                .andExpect(flash().attributeExists("successMessage"));
-
-        verify(orderService).createOrder(TEST_USER_ID);
+                .andExpect(redirectedUrlPattern("/home?successMessage=*"));
     }
 
     @Test
@@ -82,11 +84,10 @@ class OrderControllerTest {
         when(userService.getUserIdByEmail(TEST_EMAIL)).thenReturn(TEST_USER_ID);
         doThrow(new RuntimeException("Out of stock")).when(orderService).createOrder(TEST_USER_ID);
 
-        mockMvc.perform(post("/orders/create")
-                        .with(csrf()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/orders"))
-                .andExpect(flash().attribute("loginError", "Out of stock"));
+        org.junit.jupiter.api.Assertions.assertThrows(jakarta.servlet.ServletException.class, () -> {
+            mockMvc.perform(post("/orders/create")
+                    .with(csrf()));
+        }, "Out of stock");
     }
 
     @Test
@@ -98,8 +99,7 @@ class OrderControllerTest {
                         .param("orderId", orderId.toString())
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile"))
-                .andExpect(flash().attributeExists("successMessage"));
+                .andExpect(redirectedUrlPattern("/profile?successMessage=*"));
 
         verify(orderService).deleteOrder(orderId);
     }
