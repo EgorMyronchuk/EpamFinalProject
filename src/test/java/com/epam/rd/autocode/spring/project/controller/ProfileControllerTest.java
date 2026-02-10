@@ -4,6 +4,7 @@ import com.epam.rd.autocode.spring.project.dto.request.client.ClientBusModelReq;
 import com.epam.rd.autocode.spring.project.dto.request.employee.EmployeeBusModelReq;
 import com.epam.rd.autocode.spring.project.dto.response.client.ClientBusModelRes;
 import com.epam.rd.autocode.spring.project.dto.response.employee.EmployeeBusModelRes;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.OrderService;
 import com.epam.rd.autocode.spring.project.service.ProfileService;
@@ -11,10 +12,12 @@ import com.epam.rd.autocode.spring.project.service.UserService;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
 import com.epam.rd.autocode.spring.project.service.CartService;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,13 +45,18 @@ class ProfileControllerTest {
     private ClientService clientService;
     @MockBean
     private OrderService orderService;
-
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private RefreshTokenService refreshTokenService;
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private JwtService jwtService;
     @MockBean
     private CartService cartService;
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Test
     @WithMockUser(username = "client@test.com", roles = "CLIENT")
@@ -90,8 +98,7 @@ class ProfileControllerTest {
                         .with(csrf())
                         .flashAttr("profile", validDto))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile"))
-                .andExpect(flash().attributeExists("successMessage"));
+                .andExpect(redirectedUrlPattern("/profile?successMessage=*"));
 
         verify(profileService).updateProfileByEmail(eq("client@test.com"), any(ClientBusModelReq.class));
     }
@@ -106,8 +113,7 @@ class ProfileControllerTest {
                         .param("amount", "50")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile"))
-                .andExpect(flash().attributeExists("successMessage"));
+                .andExpect(redirectedUrlPattern("/profile?successMessage=*"));
 
         verify(clientService).changeBalance(eq(email), eq(new BigDecimal("150")));
     }

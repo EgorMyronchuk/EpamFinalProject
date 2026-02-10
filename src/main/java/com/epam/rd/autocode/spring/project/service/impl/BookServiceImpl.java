@@ -35,6 +35,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookRes addBook(BookReq book) {
         Book entity = bookMapper.toEntity(book);
+        entity.setSoldAmount(0);
         Book saved = bookRepository.save(entity);
         return bookMapper.toDto(saved);
     }
@@ -48,9 +49,8 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public BookRes updateBookById(Long id, BookReq bookReq ){
-        System.out.println("New Date from Request: " + bookReq.getPublicationDate());
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Book with id: " + id + " not found"));
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
         bookMapper.updateBookFromDto(bookReq, book);
 
@@ -63,7 +63,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void deleteBookByName(String name) throws NotFoundException {
         Book book = bookRepository.findByName(name)
-                .orElseThrow(() -> new NotFoundException(ExceptionConstants.NOT_FOUND));
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
         bookRepository.delete(book);
     }
@@ -106,7 +106,7 @@ public class BookServiceImpl implements BookService {
 
     public BookFullResp getBookFull(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(() -> new BookException("Not found book with this Id"));
+                .orElseThrow(() -> new BookException(ExceptionConstants.BOOK_NOT_FOUND));
 
         return bookMapper.toFullResp(book);
     }

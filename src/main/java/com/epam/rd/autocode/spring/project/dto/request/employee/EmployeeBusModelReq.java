@@ -13,22 +13,22 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class EmployeeBusModelReq {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
+    @NotBlank(message = "{error.email.required}")
+    @Email(message = "{error.email.invalid}")
     private String email;
 
-    @NotBlank(message = "Name is required")
+    @NotBlank(message = "{error.name.required}")
     private String name;
 
-    @NotBlank(message = "Phone is required")
+    @NotBlank(message = "{error.phone.required}")
     @Pattern(
             regexp = "^(\\+?380)?\\s?(\\d{2,3})[-\\s]?\\d{3}[-\\s]?\\d{2}[-\\s]?\\d{2}$",
-            message = "Phone must be a valid Ukrainian number"
+            message = "{error.phone.invalid}"
     )
     private String phone;
 
-    @NotNull(message = "Birth date is required")
-    @Past(message = "Birth date must be in the past")
+    @NotNull(message = "{error.date.required}")
+    @Past(message = "{error.date.past}")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthDate;
 }

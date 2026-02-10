@@ -91,18 +91,23 @@ class OrderServiceImplTest {
     void createOrder_ShouldThrowException_WhenNotEnoughMoney() {
         Cart cart = new Cart();
         cart.setItems(new ArrayList<>());
+
         Book book = new Book();
         book.setPrice(new BigDecimal("150.00"));
+
         CartItem cartItem = new CartItem();
         cartItem.setBook(book);
         cartItem.setQuantity(1);
         cart.getItems().add(cartItem);
 
+        client.setBalance(new BigDecimal("100.00"));
+
         when(cartRepository.findByUserId(userId)).thenReturn(Optional.of(cart));
         when(clientRepository.findByUserId(userId)).thenReturn(client);
-        when(orderRepository.save(any(Order.class))).thenAnswer(i -> i.getArguments()[0]);
 
         assertThrows(NotEnoughMoneyException.class, () -> orderService.createOrder(userId));
+
+        verify(orderRepository, never()).save(any(Order.class));
     }
 
     @Test

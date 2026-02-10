@@ -1,7 +1,11 @@
 package com.epam.rd.autocode.spring.project.conf;
 
 import com.epam.rd.autocode.spring.project.conf.filter.JwtAuthenticationFilter;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.authService.CustomUserDetailsService;
+import com.epam.rd.autocode.spring.project.service.authService.OAuth2LoginSuccessHandler;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +26,7 @@ import org.springframework.security.web.access.expression.DefaultWebSecurityExpr
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -33,6 +38,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final RefreshTokenRepository refreshTokenRepository;
+    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,29 +56,41 @@ public class SecurityConfig {
                 }))
                 .headers(headers -> headers.frameOptions(frame -> frame.disable()))
 
+                // ОБЪЕДИНЕННЫЙ БЛОК ПРАВИЛ
                 .authorizeHttpRequests(request -> request
-                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD, jakarta.servlet.DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
-                        .requestMatchers("/auth/**").permitAll()
+                        .dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/webjars/**", "/static/**").permitAll()
+                        .requestMatchers("/auth/**", "/login/**", "/oauth2/**", "/error").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/auth/**", "/error").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger resources/*", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
 
                         .requestMatchers("/home/**").hasAnyRole("USER", "EMPLOYEE")
                         .requestMatchers("/staff/**").hasAnyRole("EMPLOYEE")
 
-
+                        // Это правило должно быть строго ПОСЛЕДНИМ в этом блоке
                         .anyRequest().authenticated()
                 )
 
                 .logout(logout -> logout
                         .logoutUrl("/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            Cookie[] cookies = request.getCookies();
+                            if (cookies != null) {
+                                for (Cookie cookie : cookies) {
+                                    if ("refresh_token".equals(cookie.getName())) {
+                                        String tokenValue = cookie.getValue();
+                                        refreshTokenRepository.findByToken(tokenValue)
+                                                .ifPresent(refreshTokenRepository::delete);
+                                    }
+                                }
+                            }
+                        })
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.sendRedirect("/auth/login?logout");
                         })
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
-                        .deleteCookies("jwt", "JSESSIONID")
+                        .deleteCookies("jwt", "JSESSIONID", "refresh_token")
                         .permitAll()
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -81,10 +101,17 @@ public class SecurityConfig {
                             response.sendRedirect("/error");
                         })
                 )
-                .sessionManagement(manager ->
-                        manager.sessionCreationPolicy(STATELESS)
-                )
+                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
 
+                .formLogin(form -> form
+                        .loginPage("/auth/login")
+                        .loginProcessingUrl("/perform_login")
+                        .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .loginPage("/auth/login")
+                        .successHandler(oAuth2LoginSuccessHandler)
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 

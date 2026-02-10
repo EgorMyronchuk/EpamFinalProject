@@ -39,13 +39,7 @@ public class GlobalControllerAdvice {
                     .anyMatch(a -> a.getAuthority().equals("ROLE_USER"));
 
             if (isClient) {
-                BigDecimal balance = clientService.getBalance(email);
-
-                if ("uk".equals(locale.getLanguage())) {
-                    return balance;
-                }
-
-                return CurrencyConverter.exchangeUahToUsd(balance);
+                return clientService.getBalance(email);
             }
 
         } catch (Exception e) {

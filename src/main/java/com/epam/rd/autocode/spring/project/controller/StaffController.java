@@ -11,6 +11,7 @@ import com.epam.rd.autocode.spring.project.service.OrderService;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -20,6 +21,10 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Locale;
 
 
 @Controller
@@ -32,6 +37,7 @@ public class StaffController {
     private final UserService userService;
     private final OrderService orderService;
     private final EmployeeService employeeService;
+    private final MessageSource messageSource;
 
     @GetMapping
     public String staffDashboard(Model model,
@@ -76,22 +82,23 @@ public class StaffController {
         model.addAttribute("book", new BookReq());
         model.addAttribute("ageGroups", AgeGroup.values());
         model.addAttribute("languages", Language.values());
-        return "add-book"; // Название HTML файла
+        return "add-book";
     }
 
     @PostMapping("/books/add")
     public String processAddBook(@ModelAttribute("book") @Valid BookReq bookReq,
                                  BindingResult result,
                                  Model model,
-                                 RedirectAttributes ra) {
+                                 Locale locale) {
         if (result.hasErrors()) {
             model.addAttribute("ageGroups", AgeGroup.values());
             model.addAttribute("languages", Language.values());
             return "add-book";
         }
         bookService.addBook(bookReq);
-        ra.addFlashAttribute("successMessage", "Book added successfully!");
-        return "redirect:/staff";
+
+        String msg = messageSource.getMessage("success.book_added", null, locale);
+        return "redirect:/staff?successMessage=" + URLEncoder.encode(msg, StandardCharsets.UTF_8);
     }
 
     @GetMapping("/books/edit/{id}")
@@ -99,7 +106,7 @@ public class StaffController {
         BookFullResp book = bookService.getBookFull(id);
 
         model.addAttribute("book", book);
-        model.addAttribute("bookId", id); // Используем ID для формы
+        model.addAttribute("bookId", id);
         model.addAttribute("ageGroups", AgeGroup.values());
         model.addAttribute("languages", Language.values());
         return "edit-book";
@@ -110,7 +117,7 @@ public class StaffController {
                                     @ModelAttribute("book") @Valid BookReq bookReq,
                                     BindingResult result,
                                     Model model,
-                                    RedirectAttributes ra) {
+                                    Locale locale) {
         if (result.hasErrors()) {
             model.addAttribute("ageGroups", AgeGroup.values());
             model.addAttribute("languages", Language.values());
@@ -120,7 +127,7 @@ public class StaffController {
 
         bookService.updateBookById(id, bookReq);
 
-        ra.addFlashAttribute("successMessage", "Книга успешно обновлена!");
-        return "redirect:/staff";
+        String msg = messageSource.getMessage("success.profile_updated", null, locale);
+        return "redirect:/staff?successMessage=" + URLEncoder.encode(msg, StandardCharsets.UTF_8);
     }
 }

@@ -1,14 +1,17 @@
 package com.epam.rd.autocode.spring.project.controller;
 
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.CartService;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,19 +27,22 @@ class CartControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean
     private CartService cartService;
-
     @MockBean
     private UserService userService;
-
     @MockBean
     private UserRepository userRepository;
     @MockBean
     private ClientService clientService;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private RefreshTokenService refreshTokenService;
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
 
     private final String TEST_EMAIL = "user@example.com";
     private final Long TEST_USER_ID = 123L;

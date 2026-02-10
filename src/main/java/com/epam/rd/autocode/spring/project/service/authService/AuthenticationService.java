@@ -8,15 +8,14 @@ import com.epam.rd.autocode.spring.project.exception.AlreadyExistException;
 import com.epam.rd.autocode.spring.project.exception.ExceptionConstants;
 import com.epam.rd.autocode.spring.project.exception.NotFoundException;
 import com.epam.rd.autocode.spring.project.exception.UserAccountDisabledException;
-import com.epam.rd.autocode.spring.project.model.Cart;
-import com.epam.rd.autocode.spring.project.model.Client;
-import com.epam.rd.autocode.spring.project.model.UserPrincipal;
+import com.epam.rd.autocode.spring.project.model.*;
 import com.epam.rd.autocode.spring.project.model.enums.Role;
 import com.epam.rd.autocode.spring.project.repo.CartRepository;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
 import com.epam.rd.autocode.spring.project.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,7 +24,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.epam.rd.autocode.spring.project.model.User;
 
 import java.util.Optional;
 
@@ -50,12 +48,43 @@ public class AuthenticationService {
         user.setName(request.getName());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(Role.USER);
+        user.setProvider("LOCAL");
         user.setActive(true);
 
         Client client = new Client(user);
         user.setClientProfile(client);
 
         userRepository.save(user);
+        Cart cart = new Cart(user);
+        cartRepository.save(cart);
+
+        UserDetails userDetails = new UserPrincipal(user);
+        String jwt = jwtService.generateToken(userDetails);
+
+        return new JwtAuthenticationResponse(jwt);
+    }
+
+    @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public JwtAuthenticationResponse signUpForEmployee(CreateUserReq request) {
+
+        if (userRepository.existsByEmail(request.getEmail())){
+            throw new AlreadyExistException(ExceptionConstants.EMAIL_EXISTS);
+        }
+
+        User user = new User();
+        user.setEmail(request.getEmail());
+        user.setName(request.getName());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.EMPLOYEE);
+        user.setProvider("LOCAL");
+        user.setActive(true);
+
+        Employee employee = new Employee(user);
+        user.setEmployeeProfile(employee);
+
+        userRepository.save(user);
+
         Cart cart = new Cart(user);
         cartRepository.save(cart);
 

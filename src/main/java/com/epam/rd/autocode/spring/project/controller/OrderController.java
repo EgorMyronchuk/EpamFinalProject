@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 
 @Controller
@@ -36,26 +38,20 @@ public class OrderController {
     }
 
     @PostMapping("/create")
-    public String createOrder(Principal principal, RedirectAttributes redirectAttributes) {
+    public String createOrder(Principal principal) {
         Long userId = userService.getUserIdByEmail(principal.getName());
-        try {
-            orderService.createOrder(userId);
-            redirectAttributes.addFlashAttribute("successMessage", "Замовлення успішно оформлено!");
-            return "redirect:/home";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("loginError", e.getMessage());
-            return "redirect:/orders";
-        }
+
+        orderService.createOrder(userId);
+
+        String message = URLEncoder.encode("Замовлення успішно оформлено!", StandardCharsets.UTF_8);
+        return "redirect:/home?successMessage=" + message;
     }
 
     @PostMapping("/delete")
-    public String cancelOrder(@RequestParam Long orderId, RedirectAttributes redirectAttributes) {
-        try {
-            orderService.deleteOrder(orderId);
-            redirectAttributes.addFlashAttribute("successMessage", "Order cancelled successfully!");
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("loginError", e.getMessage());
-        }
-        return "redirect:/profile";
+    public String cancelOrder(@RequestParam Long orderId) {
+        orderService.deleteOrder(orderId);
+
+        String message = URLEncoder.encode("Order cancelled successfully!", StandardCharsets.UTF_8);
+        return "redirect:/profile?successMessage=" + message;
     }
 }

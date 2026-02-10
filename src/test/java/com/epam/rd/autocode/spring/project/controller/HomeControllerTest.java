@@ -1,16 +1,19 @@
 package com.epam.rd.autocode.spring.project.controller;
 
 import com.epam.rd.autocode.spring.project.dto.response.book.BookRes;
+import com.epam.rd.autocode.spring.project.repo.RefreshTokenRepository;
 import com.epam.rd.autocode.spring.project.service.BookService;
 import com.epam.rd.autocode.spring.project.service.CartService;
 import com.epam.rd.autocode.spring.project.service.ClientService;
 import com.epam.rd.autocode.spring.project.service.authService.JwtService;
 import com.epam.rd.autocode.spring.project.repo.UserRepository;
+import com.epam.rd.autocode.spring.project.service.authService.RefreshTokenService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -38,6 +41,13 @@ class HomeControllerTest {
     private ClientService clientService;
     @MockBean
     private JwtService jwtService;
+    @MockBean
+    private UserDetailsService userDetailsService;
+    @MockBean
+    private RefreshTokenService refreshTokenService;
+    @MockBean
+    private RefreshTokenRepository refreshTokenRepository;
+
 
     @Test
     @WithMockUser

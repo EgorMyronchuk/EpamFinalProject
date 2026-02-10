@@ -44,6 +44,7 @@ public class DataInitializer {
                 admin.setEmail(adminEmail);
                 admin.setPassword(passwordEncoder.encode(adminPass));
                 admin.setRole(Role.ADMIN);
+                admin.setProvider("LOCAL");
                 userRepository.save(admin);
             }
             if (userRepository.findByEmail("employee@gmail.com").isEmpty()) {
@@ -51,6 +52,7 @@ public class DataInitializer {
                 employee.setEmail(employeeEmail);
                 employee.setPassword(passwordEncoder.encode(employeePass));
                 employee.setRole(Role.EMPLOYEE);
+                employee.setProvider("LOCAL");
                 employee.setActive(true);
 
                 Employee employeeProfile = new Employee(employee);
@@ -67,6 +69,7 @@ public class DataInitializer {
                 user.setPassword(passwordEncoder.encode(userPass));
                 user.setName("Egor");
                 user.setRole(Role.USER);
+                user.setProvider("LOCAL");
                 Client clientProfile = new Client(user);
                 clientProfile.setBalance(new BigDecimal("100.00"));
                 user.setClientProfile(clientProfile);
